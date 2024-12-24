@@ -11,9 +11,7 @@ namespace KfFluentMvc.WinForms;
 public class MvcBuilder<M>
    where M : IMvcModel
 {
-   private MvcBindingCollection<M> _bindingCollection = new();
-   private Control _currentControl = default!;
-   //private Component _currentComponent = default!;
+   private readonly MvcBindingCollection<M> _bindingCollection = new();
 
    /// <summary>
    ///   Initialize a new <see cref="MvcBuilder{M}"/>.
@@ -38,18 +36,9 @@ public class MvcBuilder<M>
    public M Model { get; private init; }
 
    /// <summary>
-   ///   Create a binding that invokes a model method in response to a control's 
-   ///   Click event.
+   ///   The <see cref="Control"/> to bind to.
    /// </summary>
-   /// <param name="modelMethod">
-   ///   The name of the method to invoke on the model.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindFromControlClickEvent(String modelMethod)
-      => BindFromControlEvent(nameof(Control.Click), modelMethod);
+   public Control CurrentControl { get; private set; } = default!;
 
    /// <summary>
    ///   Create a binding that invokes a model method in response to a control 
@@ -71,33 +60,11 @@ public class MvcBuilder<M>
    {
       ThrowIfControlNotSet();
 
-      var binding = new FromControlEventBinding<M>(Model, _currentControl, controlEvent, modelMethod);
-      _bindingCollection.AddBinding(binding);
+      var binding = new FromControlEventBinding<M>(Model, CurrentControl, controlEvent, modelMethod);
+      WithBinding(binding);
 
       return this;
    }
-
-   /// <summary>
-   ///   Create a one-way binding from a control's Enabled property to a model 
-   ///   property.
-   /// </summary>
-   /// <param name="modelProperty">
-   ///   The model property to set when the control property changes.
-   /// </param>
-   /// <param name="propertyGetter">
-   ///   Optional. Function that gets the control property and possibly converts
-   ///   the control property to a value suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the control property
-   ///   value.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindFromControlEnabledProperty(
-      String modelProperty,
-      Func<Control, Boolean>? propertyGetter)
-      => BindFromControlProperty<Boolean>(nameof(Control.Enabled), modelProperty, propertyGetter: propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a control property to a model property.
@@ -139,77 +106,15 @@ public class MvcBuilder<M>
 
       var binding = new FromControlPropertyBinding<M, P>(
          Model,
-         _currentControl,
+         CurrentControl,
          controlProperty,
          modelProperty,
          controlPropertyChangedEvent,
          propertyGetter);
-      _bindingCollection.AddBinding(binding);
+      WithBinding(binding);
 
       return this;
    }
-
-   /// <summary>
-   ///   Create a one-way binding from a control's Text property to a model 
-   ///   property.
-   /// </summary>
-   /// <param name="modelProperty">
-   ///   The model property to set when the control property changes.
-   /// </param>
-   /// <param name="propertyGetter">
-   ///   Optional. Function that gets the control property and possibly converts
-   ///   the control property to a value suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the control property
-   ///   value.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindFromControlTextProperty(
-      String modelProperty,
-      Func<Control, String>? propertyGetter = null)
-      => BindFromControlProperty<String>(nameof(Control.Text), modelProperty, propertyGetter: propertyGetter);
-
-   /// <summary>
-   ///   Create a one-way binding from a control's Visible property to a model 
-   ///   property.
-   /// </summary>
-   /// <param name="modelProperty">
-   ///   The model property to set when the control property changes.
-   /// </param>
-   /// <param name="propertyGetter">
-   ///   Optional. Function that gets the control property and possibly converts
-   ///   the control property to a value suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the control property
-   ///   value.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindFromControlVisibleProperty(
-      String modelProperty,
-      Func<Control, Boolean>? propertyGetter)
-      => BindFromControlProperty<Boolean>(nameof(Control.Visible), modelProperty, propertyGetter: propertyGetter);
-
-   /// <summary>
-   ///   Create a one-way binding from a model property to a control's Enabled
-   ///   property.
-   /// </summary>
-   /// <param name="modelProperty">
-   ///   The name of the model property to monitor for changes.
-   /// </param>
-   /// <param name="propertyGetter">
-   ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
-   ///   property. Defaults to a function that simply gets the model property
-   ///   value.
-   /// </param>
-   public MvcBuilder<M> BindToControlEnabledProperty(
-      String modelProperty,
-      Func<M, Boolean>? propertyGetter = null)
-      => BindToControlProperty<Boolean>(modelProperty, nameof(Control.Enabled), propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control property. 
@@ -245,59 +150,15 @@ public class MvcBuilder<M>
       ThrowIfControlNotSet();
 
       var binding = new ToControlPropertyBinding<M, P>(
-         Model, 
-         _currentControl, 
+         Model,
+         CurrentControl, 
          modelProperty, 
          controlProperty, 
          propertyGetter);
-      _bindingCollection.AddBinding(binding);
+      WithBinding(binding);
 
       return this;
    }
-
-   /// <summary>
-   ///   Create a one-way binding from a model property to a control's Text
-   ///   property.
-   /// </summary>
-   /// <param name="modelProperty">
-   ///   The name of the model property to monitor for changes.
-   /// </param>
-   /// <param name="propertyGetter">
-   ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
-   ///   property. Defaults to a function that simply gets the model property
-   ///   value.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindToControlTextProperty(
-      String modelProperty, 
-      Func<M, String>? propertyGetter = null)
-      => BindToControlProperty<String>(modelProperty, nameof(Control.Text), propertyGetter);
-
-   /// <summary>
-   ///   Create a one-way binding from a model property to a control's Visible
-   ///   property.
-   /// </summary>
-   /// <param name="modelProperty">
-   ///   The name of the model property to monitor for changes.
-   /// </param>
-   /// <param name="propertyGetter">
-   ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
-   ///   property. Defaults to a function that simply gets the model property
-   ///   value.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindToControlVisibleProperty(
-      String modelProperty,
-      Func<M, Boolean>? propertyGetter = null)
-      => BindToControlProperty<Boolean>(modelProperty, nameof(Control.Visible), propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's  
@@ -322,12 +183,14 @@ public class MvcBuilder<M>
       ToolTip toolTip,
       String modelProperty)
    {
+      ThrowIfControlNotSet();
+
       var binding = new ToControlToolTipOnModelErrorBinding<M>(
          Model,
-         _currentControl,
+         CurrentControl,
          toolTip,
          modelProperty);
-      _bindingCollection.AddBinding(binding);
+      WithBinding(binding);
 
       return this;
    }
@@ -355,11 +218,13 @@ public class MvcBuilder<M>
    /// </returns>
    public MvcBuilder<M> BindToControlVisibleOnModelError(String modelProperty)
    {
+      ThrowIfControlNotSet();
+
       var binding = new ToControlVisibleOnModelErrorBinding<M>(
          Model,
-         _currentControl,
+         CurrentControl,
          modelProperty);
-      _bindingCollection.AddBinding(binding);
+      WithBinding(binding);
 
       return this;
    }
@@ -370,13 +235,7 @@ public class MvcBuilder<M>
    /// <returns>
    ///   A collection of the completed bindings.
    /// </returns>
-   public MvcBindingCollection<M> Build()
-   {
-      var result = _bindingCollection;
-      _bindingCollection = default!;
-
-      return result;
-   }
+   public MvcBindingCollection<M> Build() => _bindingCollection;
 
    /// <summary>
    ///   Create a new <see cref="MvcBuilder{M}"/> to bind a model to 
@@ -399,6 +258,28 @@ public class MvcBuilder<M>
    }
 
    /// <summary>
+   ///   Append a new binding.
+   /// </summary>
+   /// <param name="binding">
+   ///   The binding to append.
+   /// </param>
+   /// <returns>
+   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   /// <exception cref="ArgumentNullException">
+   ///   <paramref name="binding"/> is <see langword="null"/>.
+   /// </exception>
+   public MvcBuilder<M> WithBinding(IModelBinding<M> binding)
+   {
+      ArgumentNullException.ThrowIfNull(binding, nameof(binding));
+
+      _bindingCollection.AddBinding(binding);
+
+      return this;
+   }
+
+   /// <summary>
    ///   Set the <see cref="Control"/> that future bindings will bind to.
    /// </summary>
    /// <param name="control">
@@ -412,14 +293,14 @@ public class MvcBuilder<M>
    {
       ArgumentNullException.ThrowIfNull(control, nameof(control));
 
-      _currentControl = control;
+      CurrentControl = control;
 
       return this;
    }
 
    private void ThrowIfControlNotSet()
    {
-      if (_currentControl is null)
+      if (CurrentControl is null)
       {
          throw new InvalidOperationException(Messages.ControlNotSet);
       }

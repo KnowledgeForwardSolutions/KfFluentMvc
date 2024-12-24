@@ -61,6 +61,15 @@ namespace KfFluentMvc.WinForms {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current control must be of type TreeView.
+        /// </summary>
+        internal static string ControlMustBeTreeView {
+            get {
+                return ResourceManager.GetString("ControlMustBeTreeView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempt to create a model binding without first setting the control to bind to. Invoke the MvcBuilder&lt;M&gt;.WithControl method before creating bindings.
         /// </summary>
         internal static string ControlNotSet {

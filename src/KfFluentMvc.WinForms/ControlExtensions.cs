@@ -186,6 +186,12 @@ public static class ControlExtensions
    ///   property. The type of the model property is assumed to be 
    ///   <see cref="String"/>.
    /// </summary>
+   /// <remarks>
+   ///   This is a convenience method that combines two one-way binding methods,
+   ///   <see cref="BindToControlTextProperty{M}(MvcBuilder{M}, String, Func{M, String}?)"/>
+   ///   and <see cref="BindFromControlTextProperty{M}(MvcBuilder{M}, String, Func{Control, String}?)"/>
+   ///   that are commonly used together.
+   /// </remarks>
    /// <param name="builder">
    ///   The <see cref="MvcBuilder{M}"/> object.
    /// </param>

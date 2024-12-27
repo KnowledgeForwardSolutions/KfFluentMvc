@@ -104,6 +104,51 @@ public static class ControlExtensions
       => builder.BindFromControlProperty<Boolean>(nameof(Control.Visible), modelProperty, propertyGetter: propertyGetter);
 
    /// <summary>
+   ///   Create a one-way binding from a model property to a control's BackColor
+   ///   property.
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The name of the model property to monitor for changes.
+   /// </param>
+   /// <param name="propertyGetter">
+   ///   Optional. Function that gets the model property and possibly converts
+   ///   the model property to a value suitable to assign to the control
+   ///   property. Defaults to a function that simply gets the model property
+   ///   value.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public static MvcBuilder<M> BindToControlBackColorProperty<M>(
+      this MvcBuilder<M> builder,
+      String modelProperty,
+      Func<M, Color>? propertyGetter = null) where M : IMvcModel
+      => builder.BindToControlProperty<Color>(modelProperty, nameof(Control.BackColor), propertyGetter);
+
+   /// <summary>
+   ///   Create a one-way binding from a model property to a control's 
+   ///   DataSource property.
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The name of the model property to monitor for changes.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public static MvcBuilder<M> BindToControlDataSourceProperty<M, I>(
+      this MvcBuilder<M> builder,
+      String modelProperty) where M : IMvcModel
+      => builder.BindToControlProperty<BindingList<I>>(modelProperty, nameof(ListControl.DataSource));
+
+   /// <summary>
    ///   Create a one-way binding from a model property to a control's Enabled
    ///   property.
    /// </summary>
@@ -128,6 +173,32 @@ public static class ControlExtensions
       String modelProperty,
       Func<M, Boolean>? propertyGetter = null) where M : IMvcModel
       => builder.BindToControlProperty<Boolean>(modelProperty, nameof(Control.Enabled), propertyGetter);
+
+   /// <summary>
+   ///   Create a one-way binding from a model property to a control's ForeColor
+   ///   property.
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The name of the model property to monitor for changes.
+   /// </param>
+   /// <param name="propertyGetter">
+   ///   Optional. Function that gets the model property and possibly converts
+   ///   the model property to a value suitable to assign to the control
+   ///   property. Defaults to a function that simply gets the model property
+   ///   value.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public static MvcBuilder<M> BindToControlForeColorProperty<M>(
+      this MvcBuilder<M> builder,
+      String modelProperty,
+      Func<M, Color>? propertyGetter = null) where M : IMvcModel
+      => builder.BindToControlProperty<Color>(modelProperty, nameof(Control.ForeColor), propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's Text

@@ -135,6 +135,9 @@
   <data name="ModelMustBeIValidatingMvcModel" xml:space="preserve">
     <value>Model must implement IValidatingMvcModel</value>
   </data>
+  <data name="PrimaryControlIncorrectType" xml:space="preserve">
+    <value>MvcBuilder.CurrentControl type does not match the C1 type parameter</value>
+  </data>
   <data name="PropertyNotFoundMessage" xml:space="preserve">
     <value>Property "{0}" not found in class "{1}"</value>
   </data>

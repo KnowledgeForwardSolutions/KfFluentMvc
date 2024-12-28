@@ -115,6 +115,15 @@ namespace KfFluentMvc.WinForms {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MvcBuilder.CurrentControl type does not match the C1 type parameter.
+        /// </summary>
+        internal static string PrimaryControlIncorrectType {
+            get {
+                return ResourceManager.GetString("PrimaryControlIncorrectType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Property &quot;{0}&quot; not found in class &quot;{1}&quot;.
         /// </summary>
         internal static string PropertyNotFoundMessage {

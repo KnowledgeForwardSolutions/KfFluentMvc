@@ -7,17 +7,11 @@ namespace KfFluentMvc.WinForms;
 /// </summary>
 public abstract class ValidatingMvcModelBase : MvcModelBase, IValidatingMvcModel
 {
-   private Boolean _hasErrors;
-
    /// <inheritdoc/>
    public ErrorsCollection Errors { get; init; } = new();
 
    /// <inheritdoc/>
-   public Boolean HasErrors
-   {
-      get => _hasErrors;
-      set => SetProperty(ref _hasErrors, value);
-   }
+   public Boolean HasErrors => Errors.HasErrors;
 
    /// <inheritdoc/>
    public PropertyValidatorCollection PropertyValidators { get; init; } = new();
@@ -35,6 +29,7 @@ public abstract class ValidatingMvcModelBase : MvcModelBase, IValidatingMvcModel
       storage = value;
       PropertyValidators.ValidateProperty(propertyName);
       NotifyPropertyChanged(propertyName);
+      NotifyPropertyChanged(nameof(HasErrors));
 
       return true;
    }
@@ -60,6 +55,7 @@ public abstract class ValidatingMvcModelBase : MvcModelBase, IValidatingMvcModel
       {
          NotifyPropertyChanged(name);
       }
+      NotifyPropertyChanged(nameof(HasErrors));
 
       return true;
    }

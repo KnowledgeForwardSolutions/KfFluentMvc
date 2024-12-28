@@ -26,6 +26,96 @@ public static class ControlExtensions
       => builder.BindFromControlEvent(nameof(Control.Click), modelMethod);
 
    /// <summary>
+   ///   Create a binding that invokes an action that involves a second control
+   ///   in response to the primary control's Click event.
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="secondaryControl">
+   ///   The secondary control in the interaction.
+   /// </param>
+   /// <param name="action">
+   ///   Action to perform when the primary control event occurs.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   /// <exception cref="InvalidOperationException">
+   ///   The <paramref name="builder"/> CurrentControl type does not match the 
+   ///   <typeparamref name="C1"/> type.
+   /// </exception>
+   public static MvcBuilder<M> BindFromControlClickEventWithSecondaryControl<M, C1, C2>(
+      this MvcBuilder<M> builder,
+      C2 secondaryControl,
+      Action<M, C1, C2> action) 
+      where M : IMvcModel
+      where C1 : Control
+      where C2 : Control
+   {
+      if (builder.CurrentControl is not C1 primaryControl)
+      {
+         throw new InvalidOperationException(Messages.PrimaryControlIncorrectType);
+      }
+
+      var binding = new TwoControlInteractionBinding<M, C1, C2>(
+         builder.Model,
+         primaryControl,
+         nameof(Control.Click),
+         secondaryControl,
+         action);
+      builder.WithBinding(binding);
+
+      return builder;
+   }
+
+   /// <summary>
+   ///   Create a binding that invokes an action that involves a second control
+   ///   in response to the primary control's DoubleClick event.
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="secondaryControl">
+   ///   The secondary control in the interaction.
+   /// </param>
+   /// <param name="action">
+   ///   Action to perform when the primary control event occurs.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   /// <exception cref="InvalidOperationException">
+   ///   The <paramref name="builder"/> CurrentControl type does not match the 
+   ///   <typeparamref name="C1"/> type.
+   /// </exception>
+   public static MvcBuilder<M> BindFromControlDoubleClickEventWithSecondaryControl<M, C1, C2>(
+      this MvcBuilder<M> builder,
+      C2 secondaryControl,
+      Action<M, C1, C2> action)
+      where M : IMvcModel
+      where C1 : Control
+      where C2 : Control
+   {
+      if (builder.CurrentControl is not C1 primaryControl)
+      {
+         throw new InvalidOperationException(Messages.PrimaryControlIncorrectType);
+      }
+
+      var binding = new TwoControlInteractionBinding<M, C1, C2>(
+         builder.Model,
+         primaryControl,
+         nameof(Control.DoubleClick),
+         secondaryControl,
+         action);
+      builder.WithBinding(binding);
+
+      return builder;
+   }
+
+   /// <summary>
    ///   Create a one-way binding from a control's Enabled property to a model 
    ///   property.
    /// </summary>

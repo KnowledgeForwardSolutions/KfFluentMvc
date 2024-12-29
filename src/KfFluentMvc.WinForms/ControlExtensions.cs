@@ -26,6 +26,34 @@ public static class ControlExtensions
       => builder.BindFromControlEvent(nameof(Control.Click), modelMethod);
 
    /// <summary>
+   ///   Create a binding that invokes an <see cref="Action{M,Control}"/> in
+   ///   response to a control's Click event.
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="action">
+   ///   The action to perform when the control's Click event fires.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public static MvcBuilder<M> BindFromControlClickEvent<M>(
+      this MvcBuilder<M> builder,
+      Action<M, Control> action) where M : IMvcModel
+   {
+      var binding = new FromControlEventActionBinding<M>(
+         builder.Model,
+         builder.CurrentControl,
+         nameof(Control.Click),
+         action);
+      builder.WithBinding(binding);
+
+      return builder;
+   }
+
+   /// <summary>
    ///   Create a binding that invokes an action that involves a second control
    ///   in response to the primary control's Click event.
    /// </summary>

@@ -11,9 +11,6 @@
 /// <typeparam name="M">
 ///   The bound model type.
 /// </typeparam>
-/// <typeparam name="C">
-///   The bound control type.
-/// </typeparam>
 /// <typeparam name="P">
 ///   The type of the model's bound property.
 /// </typeparam>
@@ -27,7 +24,7 @@ public class FromControlPropertyBinding<M, P> : MvcBindingBase<M>
    protected Delegate _handlerDelegate;
 
    /// <summary>
-   ///   Initialize a new <see cref="FromControlPropertyBinding{M, C}"/>.
+   ///   Initialize a new <see cref="FromControlPropertyBinding{M, P}"/>.
    /// </summary>
    /// <param name="model">
    ///   The model to update when the control property changes.

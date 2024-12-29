@@ -16,7 +16,7 @@ public class ToTreeViewSelectedItemPropertyBinding<M, P> : ToControlPropertyBind
    protected Func<P, String> _keyGetter;
 
    /// <summary>
-   ///   Initialize a new <see cref="ToTreeViewSelectedItemProperty{M}"/>.
+   ///   Initialize a new <see cref="ToTreeViewSelectedItemPropertyBinding{M,P}"/>.
    /// </summary>
    /// <param name="model">
    ///   The model to monitor for property changes.

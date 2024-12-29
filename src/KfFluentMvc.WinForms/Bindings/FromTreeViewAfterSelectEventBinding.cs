@@ -1,5 +1,17 @@
 ﻿namespace KfFluentMvc.WinForms.Bindings;
 
+/// <summary>
+///   Defines a one-way binding from a <see cref="TreeView"/> control's 
+///   AfterSelect event to a model property. When the AfterSelect event fires
+///   the model property is updated with a value derived from the TreeView's
+///   SelectedNode property.
+/// </summary>
+/// <typeparam name="M">
+///   The bound model type.
+/// </typeparam>
+/// <typeparam name="P">
+///   The type of the model's bound property.
+/// </typeparam>
 public class FromTreeViewAfterSelectEventBinding<M, P> : MvcBindingBase<M>
    where M : IMvcModel
 {
@@ -7,10 +19,8 @@ public class FromTreeViewAfterSelectEventBinding<M, P> : MvcBindingBase<M>
    protected Func<TreeNode?, P?> _selectedValueGetter;
 
    /// <summary>
-   ///   Defines a one-way binding from a <see cref="TreeView"/> control's 
-   ///   AfterSelect event to a model property. When the AfterSelect event fires
-   ///   the model property is updated with a value derived from the TreeView's
-   ///   SelectedNode property.
+   ///   Initialize a new 
+   ///   <see cref="FromTreeViewAfterSelectEventBinding{M, P}"/>.
    /// </summary>
    /// <param name="model">
    ///   The bound model.

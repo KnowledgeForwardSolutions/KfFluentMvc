@@ -5,17 +5,18 @@
 ///   The model property is updated whenever the control broadcasts a 
 ///   notification that its property has changed.
 /// </summary>
-/// <remarks>
-///   The control event handler must be an <see cref="EventArgs"/> handler.
-/// </remarks>
 /// <typeparam name="M">
 ///   The bound model type.
+/// </typeparam>
+/// <typeparam name="E">
+///   The event argument type.
 /// </typeparam>
 /// <typeparam name="P">
 ///   The type of the model's bound property.
 /// </typeparam>
-public class FromControlPropertyBinding<M, P> : MvcBindingBase<M>
+public class ControlPropertyBinding<M, E, P> : MvcBindingBase<M>
    where M : IMvcModel
+   where E : EventArgs
 {
    protected PropertyInfo _modelPropertyInfo;
    protected PropertyInfo _controlPropertyInfo;
@@ -24,7 +25,7 @@ public class FromControlPropertyBinding<M, P> : MvcBindingBase<M>
    protected Delegate _handlerDelegate;
 
    /// <summary>
-   ///   Initialize a new <see cref="FromControlPropertyBinding{M, P}"/>.
+   ///   Initialize a new <see cref="ControlPropertyBinding{M, E, P}"/>.
    /// </summary>
    /// <param name="model">
    ///   The model to update when the control property changes.
@@ -71,7 +72,7 @@ public class FromControlPropertyBinding<M, P> : MvcBindingBase<M>
    ///   <paramref name="model"/> does not implement a property named 
    ///   <paramref name="modelProperty"/>.
    /// </exception>
-   public FromControlPropertyBinding(
+   public ControlPropertyBinding(
       M model,
       Control control,
       String controlProperty,
@@ -106,11 +107,13 @@ public class FromControlPropertyBinding<M, P> : MvcBindingBase<M>
    /// </summary>
    public Control Control { get; private set; }
 
-   public void Control_PropertyChanged(Object? sender, EventArgs e)
+#pragma warning disable IDE0060 // Remove unused parameter
+   public void Control_PropertyChanged(Object? sender, E e)
    {
       var value = _propertyGetter(Control);
       _modelPropertyInfo.SetValue(Model, value);
    }
+#pragma warning restore IDE0060 // Remove unused parameter
 
    protected override void ReleaseResources()
    {

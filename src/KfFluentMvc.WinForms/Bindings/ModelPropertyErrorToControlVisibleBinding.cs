@@ -6,13 +6,11 @@
 ///   if the model property has an error, otherwise it is set to 
 ///   <see langword="false"/>.
 /// </summary>
-public class ToControlVisibleOnModelErrorBinding<M> : MvcBindingBase<M>
+public class ModelPropertyErrorToControlVisibleBinding<M> : ModelPropertyBindingBase<M, Object>
    where M : IMvcModel
 {
-   protected PropertyInfo _modelPropertyInfo;
-
    /// <summary>
-   ///   Initialize a new <see cref="ToControlVisibleOnModelErrorBinding{M}"/>.
+   ///   Initialize a new <see cref="ModelPropertyErrorToControlVisibleBinding{M}"/>.
    /// </summary>
    /// <param name="model">
    ///   The model to monitor for property changes.
@@ -41,10 +39,10 @@ public class ToControlVisibleOnModelErrorBinding<M> : MvcBindingBase<M>
    ///   <paramref name="model"/> does not implement 
    ///   <see cref="IValidatingMvcModel"/>.
    /// </exception>
-   public ToControlVisibleOnModelErrorBinding(
+   public ModelPropertyErrorToControlVisibleBinding(
       M model,
       Control control,
-      String modelProperty) : base(model)
+      String modelProperty) : base(model, modelProperty)
    {
       ArgumentNullException.ThrowIfNull(model, nameof(model));
       ArgumentNullException.ThrowIfNull(control, nameof(control));
@@ -55,9 +53,6 @@ public class ToControlVisibleOnModelErrorBinding<M> : MvcBindingBase<M>
       }
 
       Control = control;
-      _modelPropertyInfo = Model.GetPropertyInfo(modelProperty);
-
-      Model.PropertyChanged += Model_PropertyChanged;
    }
 
    /// <summary>
@@ -65,20 +60,13 @@ public class ToControlVisibleOnModelErrorBinding<M> : MvcBindingBase<M>
    /// </summary>
    public Control Control { get; private set; }
 
+   protected override void HandlePropertyChanged(PropertyChangedEventArgs e) => 
+      Control.Visible = ((IValidatingMvcModel)Model).Errors.PropertyHasError(_modelPropertyInfo.Name);
+
    protected override void ReleaseResources()
    {
-      Model.PropertyChanged -= Model_PropertyChanged;
-      _modelPropertyInfo = default!;
       Control = default!;
 
       base.ReleaseResources();
-   }
-
-   private void Model_PropertyChanged(Object? sender, PropertyChangedEventArgs e)
-   {
-      if (e.PropertyName == _modelPropertyInfo.Name || e.PropertyName == String.Empty)
-      {
-         Control.Visible = ((IValidatingMvcModel)Model).Errors.PropertyHasError(_modelPropertyInfo.Name);
-      }
    }
 }

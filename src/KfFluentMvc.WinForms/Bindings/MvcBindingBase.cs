@@ -4,7 +4,8 @@ namespace KfFluentMvc.WinForms.Bindings;
 
 /// <summary>
 ///   Abstract base class for binding a MVC model to a <see cref="Component"/>
-///   or a <see cref="Control"/>.
+///   or a <see cref="Control"/>. Sets up the infrastructure to manage a model
+///   object and to handle disposition of the binding.
 /// </summary>
 /// <typeparam name="M">
 ///   The bound model type.

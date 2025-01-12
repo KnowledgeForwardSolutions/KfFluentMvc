@@ -1,18 +1,24 @@
 ﻿namespace KfFluentMvc.WinForms.Bindings;
 
 /// <summary>
-///   Abstract base class for a binding from a model property to a control 
-///   property. Adds the infrastructure to monitor the model for property change
-///   notifications.
+///   Abstract base class for a binding a model property. Extends 
+///   <see cref="MvcBindingBase{M}"/> to handle monitoring the model for 
+///   property change notifications and for retrieving the model property value.
 /// </summary>
-public abstract class ToControlPropertyBindingBase<M, P> : MvcBindingBase<M>
+/// <typeparam name="M">
+///   The bound model type.
+/// </typeparam>
+/// <typeparam name="P">
+///   The type of the control's bound property.
+/// </typeparam>
+public abstract class ModelPropertyBindingBase<M, P> : MvcBindingBase<M>
    where M : IMvcModel
 {
    protected PropertyInfo _modelPropertyInfo;
    protected Func<M, P> _propertyGetter = default!;
 
    /// <summary>
-   ///   Initialize a new <see cref="ToControlPropertyBindingBase{M, P}"/>.
+   ///   Initialize a new <see cref="ModelPropertyBindingBase{M, P}"/>.
    /// </summary>
    /// <param name="model">
    ///   The model to monitor for property changes.
@@ -40,7 +46,7 @@ public abstract class ToControlPropertyBindingBase<M, P> : MvcBindingBase<M>
    ///   <paramref name="model"/> does not implement a property named 
    ///   <paramref name="modelProperty"/>.
    /// </exception>
-   public ToControlPropertyBindingBase(
+   public ModelPropertyBindingBase(
       M model,
       String modelProperty,
       Func<M, P>? propertyGetter = null) : base(model)

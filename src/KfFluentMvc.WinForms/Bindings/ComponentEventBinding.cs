@@ -1,38 +1,37 @@
 ﻿namespace KfFluentMvc.WinForms.Bindings;
 
 /// <summary>
-///   Defines a binding that invokes a model method in response to a control 
+///   Defines a binding that invokes a model method in response to a component 
 ///   event.
 /// </summary>
 /// <remarks>
-///   <para>
-///      The typical example is a control Click event triggering a model method.
-///   </para>
-///   <para>
-///   The control event handler must be an <see cref="EventArgs"/> handler.
-///   </para>
+///   The typical example is a component Click event triggering a model method.
 /// </remarks>
 /// <typeparam name="M">
 ///   The bound model type.
 /// </typeparam>
-public class FromControlEventBinding<M> : MvcBindingBase<M>
+/// <typeparam name="E">
+///   The event argument type.
+/// </typeparam>
+class ComponentEventBinding<M, E> : MvcBindingBase<M>
    where M : IMvcModel
+   where E : EventArgs
 {
+   protected EventInfo _componentEventInfo;
    protected MethodInfo _modelMethodInfo;
-   protected EventInfo _controlEventInfo;
    protected Delegate _handlerDelegate;
 
    /// <summary>
-   ///   Initialize a new <see cref="FromControlEventBinding{M}"/>.
+   ///   Initialize a new <see cref="ComponentEventBinding{M, E}"/>.
    /// </summary>
    /// <param name="model">
    ///   The bound model.
    /// </param>
-   /// <param name="control">
-   ///   The control to monitor for event notifications.
+   /// <param name="component">
+   ///   The component to monitor for event notifications.
    /// </param>
-   /// <param name="controlEvent">
-   ///   The name of the control event to monitor.
+   /// <param name="componentEvent">
+   ///   The name of the component event to monitor.
    /// </param>
    /// <param name="modelMethod">
    ///   The name of the method to invoke on the model.
@@ -40,22 +39,22 @@ public class FromControlEventBinding<M> : MvcBindingBase<M>
    /// <exception cref="ArgumentNullException">
    ///   <paramref name="model"/> is <see langword="null"/>.
    ///   - or -
-   ///   <paramref name="control"/> is <see langword="null"/>.
+   ///   <paramref name="component"/> is <see langword="null"/>.
    ///   - or -
-   ///   <paramref name="controlEvent"/> is <see langword="null"/>.
+   ///   <paramref name="componentEvent"/> is <see langword="null"/>.
    ///   - or -
    ///   <paramref name="modelMethod"/> is <see langword="null"/>.
    /// </exception>
    /// <exception cref="ArgumentException">
-   ///   <paramref name="controlEvent"/> is <see cref="String.Empty"/> or all
+   ///   <paramref name="componentEvent"/> is <see cref="String.Empty"/> or all
    ///   whitespace characters.
    ///   - or -
    ///   <paramref name="modelMethod"/> is <see cref="String.Empty"/> or all
    ///   whitespace characters.
    /// </exception>
    /// <exception cref="InvalidOperationException">
-   ///   <paramref name="control"/> does not implement an event named 
-   ///   <paramref name="controlEvent"/>.
+   ///   <paramref name="component"/> does not implement an event named 
+   ///   <paramref name="componentEvent"/>.
    ///   - or -
    ///   <paramref name="model"/> does not implement a method named 
    ///   <paramref name="modelMethod"/>.
@@ -64,53 +63,54 @@ public class FromControlEventBinding<M> : MvcBindingBase<M>
    ///   <paramref name="model"/> does not have return type void (for 
    ///   synchronous methods) or <see cref="Task"/> for asynchronous methods.
    /// </exception>
-   public FromControlEventBinding(
+   public ComponentEventBinding(
       M model,
-      Control control,
-      String controlEvent,
+      Component component,
+      String componentEvent,
       String modelMethod) : base(model)
    {
       ArgumentNullException.ThrowIfNull(model, nameof(model));
-      ArgumentNullException.ThrowIfNull(control, nameof(control));
-      ArgumentNullException.ThrowIfNullOrWhiteSpace(controlEvent, nameof(controlEvent));
+      ArgumentNullException.ThrowIfNull(component, nameof(component));
+      ArgumentNullException.ThrowIfNullOrWhiteSpace(componentEvent, nameof(componentEvent));
       ArgumentNullException.ThrowIfNullOrWhiteSpace(modelMethod, nameof(modelMethod));
 
-      Control = control;
       _modelMethodInfo = model.GetMethodInfo(modelMethod);
+      Component = component;
 
       // see https://stackoverflow.com/questions/45779/c-sharp-dynamic-event-subscription
-      _controlEventInfo = Control.GetEventInfo(controlEvent);
+      _componentEventInfo = Component.GetEventInfo(componentEvent);
       var handlerMethodInfo = _modelMethodInfo.ReturnType == typeof(void)
-         ? this.GetMethodInfo(nameof(Control_Event))
+         ? this.GetMethodInfo(nameof(Component_Event))
          : _modelMethodInfo.ReturnType == typeof(Task)
-            ? this.GetMethodInfo(nameof(Control_AsyncEvent))
+            ? this.GetMethodInfo(nameof(Component_AsyncEvent))
             : throw new InvalidOperationException(Messages.InvalidBoundMethodSignatureMessage);
       _handlerDelegate = Delegate.CreateDelegate(
-         _controlEventInfo.EventHandlerType!,
+         _componentEventInfo.EventHandlerType!,
          this,
          handlerMethodInfo);
-      _controlEventInfo.AddEventHandler(Control, _handlerDelegate);
+      _componentEventInfo.AddEventHandler(Component, _handlerDelegate);
    }
 
    /// <summary>
    ///   The bound control.
    /// </summary>
-   public Control Control { get; private set; }
+   public Component Component { get; private set; }
 
-   public void Control_Event(Object? sender, EventArgs e)
+#pragma warning disable IDE0060 // Remove unused parameter
+   public void Component_Event(Object? sender, E e)
       => _modelMethodInfo.Invoke(Model, null);
 
-   public async void Control_AsyncEvent(Object? sender, EventArgs e)
+   public async void Component_AsyncEvent(Object? sender, E e)
       => await (Task)_modelMethodInfo.Invoke(Model, null)!;
+#pragma warning restore IDE0060 // Remove unused parameter
 
    protected override void ReleaseResources()
    {
-      _controlEventInfo.RemoveEventHandler(Control, _handlerDelegate);
+      _componentEventInfo.RemoveEventHandler(Component, _handlerDelegate);
 
       _modelMethodInfo = default!;
-      _controlEventInfo = default!;
+      _componentEventInfo = default!;
       _handlerDelegate = default!;
-      Control = default!;
 
       base.ReleaseResources();
    }

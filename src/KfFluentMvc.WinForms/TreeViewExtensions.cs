@@ -131,7 +131,7 @@ public static class TreeViewExtensions
          throw new InvalidOperationException(Messages.ControlMustBeTreeView);
       }
 
-      var binding = new ToTreeViewSelectedItemPropertyBinding<M, P>(
+      var binding = new ModelPropertyToTreeViewSelectedItemBinding<M, P>(
          builder.Model,
          treeView,
          modelProperty,

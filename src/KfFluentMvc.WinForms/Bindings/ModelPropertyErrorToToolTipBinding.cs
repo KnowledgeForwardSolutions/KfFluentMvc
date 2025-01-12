@@ -6,13 +6,11 @@
 ///   error message(s) or to <see cref="String.Empty"/> if the bound property
 ///   does not have errors.
 /// </summary>
-public class ToControlToolTipOnModelErrorBinding<M> : MvcBindingBase<M>
+public class ModelPropertyErrorToToolTipBinding<M> : ModelPropertyBindingBase<M, Object>
    where M : IMvcModel
 {
-   protected PropertyInfo _modelPropertyInfo;
-
    /// <summary>
-   ///   Initialize a new <see cref="ToControlToolTipOnModelErrorBinding{M}"/>.
+   ///   Initialize a new <see cref="ModelPropertyErrorToToolTipBinding{M}"/>.
    /// </summary>
    /// <param name="model">
    ///   The model to monitor for property changes.
@@ -46,11 +44,11 @@ public class ToControlToolTipOnModelErrorBinding<M> : MvcBindingBase<M>
    ///   <paramref name="model"/> does not implement 
    ///   <see cref="IValidatingMvcModel"/>.
    /// </exception>
-   public ToControlToolTipOnModelErrorBinding(
+   public ModelPropertyErrorToToolTipBinding(
       M model,
       Control control,
       ToolTip toolTip,
-      String modelProperty) : base(model)
+      String modelProperty) : base(model, modelProperty)
    {
       ArgumentNullException.ThrowIfNull(model, nameof(model));
       ArgumentNullException.ThrowIfNull(control, nameof(control));
@@ -63,9 +61,6 @@ public class ToControlToolTipOnModelErrorBinding<M> : MvcBindingBase<M>
 
       Control = control;
       ToolTip = toolTip;
-      _modelPropertyInfo = Model.GetPropertyInfo(modelProperty);
-
-      Model.PropertyChanged += Model_PropertyChanged;
    }
 
    /// <summary>
@@ -78,22 +73,17 @@ public class ToControlToolTipOnModelErrorBinding<M> : MvcBindingBase<M>
    /// </summary>
    public ToolTip ToolTip { get; private set; }
 
-   protected override void ReleaseResources()
+   protected override void HandlePropertyChanged(PropertyChangedEventArgs e)
    {
-      Model.PropertyChanged -= Model_PropertyChanged;
-      Control = default!;
-      ToolTip = default!;
-      _modelPropertyInfo = default!;
-
-      base.ReleaseResources();
+      var messages = ((IValidatingMvcModel)Model).Errors[_modelPropertyInfo.Name];
+      ToolTip.SetToolTip(Control, String.Join("\n\n", messages));
    }
 
-   private void Model_PropertyChanged(Object? sender, PropertyChangedEventArgs e)
+   protected override void ReleaseResources()
    {
-      if (e.PropertyName == _modelPropertyInfo.Name || e.PropertyName == String.Empty)
-      {
-         var messages = ((IValidatingMvcModel)Model).Errors[_modelPropertyInfo.Name];
-         ToolTip.SetToolTip(Control, String.Join("\n\n", messages));
-      }
+      Control = default!;
+      ToolTip = default!;
+
+      base.ReleaseResources();
    }
 }

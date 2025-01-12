@@ -36,9 +36,40 @@ public class MvcBuilder<M>
    public M Model { get; private init; }
 
    /// <summary>
+   ///   The <see cref="Component"/> to bind to.
+   /// </summary>
+   public Component CurrentComponent { get; private set; } = default!;
+
+   /// <summary>
    ///   The <see cref="Control"/> to bind to.
    /// </summary>
    public Control CurrentControl { get; private set; } = default!;
+
+   /// <summary>
+   ///   Create a binding that invokes a model method in response to a component 
+   ///   event.
+   /// </summary>
+   /// <param name="componentEvent">
+   ///   The name of the component event to monitor.
+   /// </param>
+   /// <param name="modelMethod">
+   ///   The name of the method to invoke on the model.
+   /// </param>
+   /// <returns>
+   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public MvcBuilder<M> BindFromComponentEvent<E>(
+      String componentEvent,
+      String modelMethod) where E : EventArgs
+   {
+      ThrowIfComponentNotSet();
+
+      var binding = new ComponentEventBinding<M, E>(Model, CurrentComponent, componentEvent, modelMethod);
+      WithBinding(binding);
+
+      return this;
+   }
 
    /// <summary>
    ///   Create a binding that invokes a model method in response to a control 
@@ -54,13 +85,39 @@ public class MvcBuilder<M>
    ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   public MvcBuilder<M> BindFromControlEvent(
+   public MvcBuilder<M> BindFromControlEvent<E>(
       String controlEvent,
-      String modelMethod)
+      String modelMethod) where E : EventArgs
    {
       ThrowIfControlNotSet();
 
-      var binding = new FromControlEventBinding<M>(Model, CurrentControl, controlEvent, modelMethod);
+      var binding = new ControlEventBinding<M, E>(Model, CurrentControl, controlEvent, modelMethod);
+      WithBinding(binding);
+
+      return this;
+   }
+
+   /// <summary>
+   ///   Create a binding that performs an action in response to a control 
+   ///   event.
+   /// </summary>
+   /// <param name="controlEvent">
+   ///   The name of the control event to monitor.
+   /// </param>
+   /// <param name="action">
+   ///   The action to perform when the control event fires.
+   /// </param>
+   /// <returns>
+   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public MvcBuilder<M> BindFromControlEvent<E>(
+      String controlEvent,
+      Action<M, Control> action) where E : EventArgs
+   {
+      ThrowIfControlNotSet();
+
+      var binding = new ControlEventActionBinding<M, E>(Model, CurrentControl, controlEvent, action);
       WithBinding(binding);
 
       return this;
@@ -96,15 +153,15 @@ public class MvcBuilder<M>
    ///   Attempt to invoke this method without first invoking the 
    ///   <see cref="WithControl(Control)"/> method.
    /// </exception>
-   public MvcBuilder<M> BindFromControlProperty<P>(
+   public MvcBuilder<M> BindFromControlProperty<E, P>(
       String controlProperty,
       String modelProperty,
       String? controlPropertyChangedEvent = null,
-      Func<Control, P>? propertyGetter = null)
+      Func<Control, P>? propertyGetter = null) where E : EventArgs
    {
       ThrowIfControlNotSet();
 
-      var binding = new FromControlPropertyBinding<M, P>(
+      var binding = new ControlPropertyBinding<M, E, P>(
          Model,
          CurrentControl,
          controlProperty,
@@ -149,81 +206,12 @@ public class MvcBuilder<M>
    {
       ThrowIfControlNotSet();
 
-      var binding = new ToControlPropertyBinding<M, P>(
+      var binding = new ModelPropertyBinding<M, P>(
          Model,
          CurrentControl, 
          modelProperty, 
          controlProperty, 
          propertyGetter);
-      WithBinding(binding);
-
-      return this;
-   }
-
-   /// <summary>
-   ///   Create a one-way binding from a model property to a control's  
-   ///   <see cref="ToolTip"/>. The ToolTip text is set to the bound property's
-   ///   error message(s) or to <see cref="String.Empty"/> if the bound property
-   ///   does not have errors.
-   /// </summary>
-   /// <remarks>
-   ///   The model must implement <see cref="IValidatingMvcModel"/>.
-   /// </remarks>
-   /// <param name="toolTip">
-   ///   The bound <see cref="ToolTip"/> component.
-   /// </param>
-   /// <param name="modelProperty">
-   ///   The name of the model property to monitor for changes.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindToControlToolTipOnModelError(
-      ToolTip toolTip,
-      String modelProperty)
-   {
-      ThrowIfControlNotSet();
-
-      var binding = new ToControlToolTipOnModelErrorBinding<M>(
-         Model,
-         CurrentControl,
-         toolTip,
-         modelProperty);
-      WithBinding(binding);
-
-      return this;
-   }
-
-   /// <summary>
-   ///   Create a one-way binding from a model property to a control's Visible
-   ///   property that makes the control visible when the model property has an
-   ///   error.
-   /// </summary>
-   /// <remarks>
-   ///   <para>
-   ///      The model must implement <see cref="IValidatingMvcModel"/>.
-   ///   </para>
-   ///   <para>
-   ///      Typically used to display error indicators next to a control that
-   ///      is bound to a model property that has an error.
-   ///   </para>
-   /// </remarks>
-   /// <param name="modelProperty">
-   ///   The name of the model property to monitor for changes.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> BindToControlVisibleOnModelError(String modelProperty)
-   {
-      ThrowIfControlNotSet();
-
-      var binding = new ToControlVisibleOnModelErrorBinding<M>(
-         Model,
-         CurrentControl,
-         modelProperty);
       WithBinding(binding);
 
       return this;
@@ -280,6 +268,26 @@ public class MvcBuilder<M>
    }
 
    /// <summary>
+   ///   Set the <see cref="Component"/> that future bindings will bind to.
+   /// </summary>
+   /// <param name="component">
+   ///   The next <see cref="Component"/> to bind the model to.
+   /// </param>
+   /// <returns>
+   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public MvcBuilder<M> WithComponent(Component component)
+   {
+      ArgumentNullException.ThrowIfNull(component, nameof(component));
+
+      CurrentComponent = component;
+      CurrentControl = default!;
+
+      return this;
+   }
+
+   /// <summary>
    ///   Set the <see cref="Control"/> that future bindings will bind to.
    /// </summary>
    /// <param name="control">
@@ -294,8 +302,17 @@ public class MvcBuilder<M>
       ArgumentNullException.ThrowIfNull(control, nameof(control));
 
       CurrentControl = control;
+      CurrentComponent = default!;
 
       return this;
+   }
+
+   private void ThrowIfComponentNotSet()
+   {
+      if (CurrentComponent is null)
+      {
+         throw new InvalidOperationException(Messages.ControlNotSet);
+      }
    }
 
    private void ThrowIfControlNotSet()

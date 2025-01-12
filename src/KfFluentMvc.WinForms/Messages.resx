@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ComponentMustBeToolStripItem" xml:space="preserve">
+    <value>Current component must be of type ToolStripItem</value>
+  </data>
+  <data name="ComponentNotSet" xml:space="preserve">
+    <value>Attempt to create a model binding without first setting the component to bind to. Invoke the MvcBuilder&lt;M&gt;.WithComponent method before creating bindings</value>
+  </data>
   <data name="ControlMustBeTreeView" xml:space="preserve">
     <value>Current control must be of type TreeView</value>
   </data>

@@ -12,7 +12,7 @@
 /// <typeparam name="I">
 ///   The model item type.
 /// </typeparam>
-public class ToTreeViewNodesPropertyBinding<M, I> : ToControlPropertyBindingBase<M, IEnumerable<I>>
+public class ToTreeViewNodesPropertyBinding<M, I> : ModelPropertyBindingBase<M, IEnumerable<I>>
    where M : IMvcModel
 {
    protected Func<IEnumerable<I>?, IEnumerable<TreeNode>> _collectionMapper;

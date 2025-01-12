@@ -23,7 +23,7 @@ public static class ControlExtensions
    public static MvcBuilder<M> BindFromControlClickEvent<M>(
       this MvcBuilder<M> builder,
       String modelMethod) where M : IMvcModel
-      => builder.BindFromControlEvent(nameof(Control.Click), modelMethod);
+      => builder.BindFromControlEvent<EventArgs>(nameof(Control.Click), modelMethod);
 
    /// <summary>
    ///   Create a binding that invokes an <see cref="Action{M,Control}"/> in
@@ -42,16 +42,7 @@ public static class ControlExtensions
    public static MvcBuilder<M> BindFromControlClickEvent<M>(
       this MvcBuilder<M> builder,
       Action<M, Control> action) where M : IMvcModel
-   {
-      var binding = new FromControlEventActionBinding<M>(
-         builder.Model,
-         builder.CurrentControl,
-         nameof(Control.Click),
-         action);
-      builder.WithBinding(binding);
-
-      return builder;
-   }
+      => builder.BindFromControlEvent<EventArgs>(nameof(Control.Click), action);
 
    /// <summary>
    ///   Create a binding that invokes an action that involves a second control
@@ -167,7 +158,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<Control, Boolean>? propertyGetter) where M : IMvcModel
-      => builder.BindFromControlProperty<Boolean>(nameof(Control.Enabled), modelProperty, propertyGetter: propertyGetter);
+      => builder.BindFromControlProperty<EventArgs, Boolean>(
+         nameof(Control.Enabled), 
+         modelProperty, 
+         propertyGetter: propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a control's Text property to a model 
@@ -193,7 +187,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<Control, String>? propertyGetter = null) where M : IMvcModel
-      => builder.BindFromControlProperty<String>(nameof(Control.Text), modelProperty, propertyGetter: propertyGetter);
+      => builder.BindFromControlProperty<EventArgs, String>(
+         nameof(Control.Text), 
+         modelProperty, 
+         propertyGetter: propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a control's Visible property to a model 
@@ -219,7 +216,77 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<Control, Boolean>? propertyGetter) where M : IMvcModel
-      => builder.BindFromControlProperty<Boolean>(nameof(Control.Visible), modelProperty, propertyGetter: propertyGetter);
+      => builder.BindFromControlProperty<EventArgs, Boolean>(
+         nameof(Control.Visible), 
+         modelProperty, 
+         propertyGetter: propertyGetter);
+
+   /// <summary>
+   ///   Create a binding to a model property that sets a control's Visible
+   ///   property to <see langword="true"/> if the property has a validation
+   ///   error.
+   /// </summary>
+   /// <remarks>
+   ///   The model must implement <see cref="IValidatingMvcModel"/>.
+   /// </remarks>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The name of the model property to monitor for errors.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public static MvcBuilder<M> BindModelPropertyErrorToControlVisible<M>(
+      this MvcBuilder<M> builder,
+      String modelProperty) where M : IMvcModel
+   {
+      var binding = new ModelPropertyErrorToControlVisibleBinding<M>(
+         builder.Model,
+         builder.CurrentControl,
+         modelProperty);
+      builder.WithBinding(binding);
+
+      return builder;
+   }
+
+   /// <summary>
+   ///   Create a binding to a model property that sets a <see cref="ToolTip"/>
+   ///   message if the property has a validation error or sets  the message
+   ///   to <see cref="String.Empty"/> if the property has no errors.
+   /// </summary>
+   /// <remarks>
+   ///   The model must implement <see cref="IValidatingMvcModel"/>.
+   /// </remarks>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The name of the model property to monitor for errors.
+   /// </param>
+   /// <param name="toolTip">
+   ///   The <see cref="ToolTip"/> to update when the model property changes.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public static MvcBuilder<M> BindModelPropertyErrorToToolTip<M>(
+      this MvcBuilder<M> builder,
+      String modelProperty,
+      ToolTip toolTip) where M : IMvcModel
+   {
+      var binding = new ModelPropertyErrorToToolTipBinding<M>(
+         builder.Model,
+         builder.CurrentControl,
+         toolTip,
+         modelProperty);
+      builder.WithBinding(binding);
+
+      return builder;
+   }
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's BackColor

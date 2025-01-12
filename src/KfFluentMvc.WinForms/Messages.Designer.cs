@@ -61,6 +61,24 @@ namespace KfFluentMvc.WinForms {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current component must be of type ToolStripItem.
+        /// </summary>
+        internal static string ComponentMustBeToolStripItem {
+            get {
+                return ResourceManager.GetString("ComponentMustBeToolStripItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempt to create a model binding without first setting the component to bind to. Invoke the MvcBuilder&lt;M&gt;.WithComponent method before creating bindings.
+        /// </summary>
+        internal static string ComponentNotSet {
+            get {
+                return ResourceManager.GetString("ComponentNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current control must be of type TreeView.
         /// </summary>
         internal static string ControlMustBeTreeView {

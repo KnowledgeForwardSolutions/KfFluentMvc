@@ -15,15 +15,19 @@
 /// <typeparam name="M">
 ///   The bound model type.
 /// </typeparam>
-public class FromControlEventActionBinding<M> : MvcBindingBase<M>
+/// <typeparam name="E">
+///   The event argument type.
+/// </typeparam>
+public class ControlEventActionBinding<M, E> : MvcBindingBase<M>
    where M : IMvcModel
+   where E : EventArgs
 {
    protected EventInfo _controlEventInfo;
    protected Delegate _handlerDelegate;
    protected Action<M, Control> _action;
 
    /// <summary>
-   ///   Initialize a new <see cref="FromControlEventActionBinding{M}"/>.
+   ///   Initialize a new <see cref="ControlEventActionBinding{M}"/>.
    /// </summary>
    /// <param name="model">
    ///   The bound model.
@@ -57,7 +61,7 @@ public class FromControlEventActionBinding<M> : MvcBindingBase<M>
    ///   <paramref name="control"/> does not implement an event named 
    ///   <paramref name="controlEvent"/>.
    /// </exception>
-   public FromControlEventActionBinding(
+   public ControlEventActionBinding(
       M model,
       Control control,
       String controlEvent,
@@ -86,8 +90,10 @@ public class FromControlEventActionBinding<M> : MvcBindingBase<M>
    /// </summary>
    public Control Control { get; private set; }
 
-   public void Control_Event(Object? sender, EventArgs e)
+#pragma warning disable IDE0060 // Remove unused parameter
+   public void Control_Event(Object? sender, E e)
       => _action(Model, Control);
+#pragma warning restore IDE0060 // Remove unused parameter
 
    protected override void ReleaseResources()
    {

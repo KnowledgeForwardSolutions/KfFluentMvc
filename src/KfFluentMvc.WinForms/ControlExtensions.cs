@@ -135,6 +135,46 @@ public static class ControlExtensions
    }
 
    /// <summary>
+   ///   Create a one-way binding from a <see cref="CheckBox"/> control's 
+   ///   Checked property to a model property
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The model property to set when the control property changes.
+   /// </param>
+   /// <param name="propertyGetter">
+   ///   Optional. Function that gets the control property and possibly converts
+   ///   the control property to a value suitable to assign to the model
+   ///   property. Defaults to a function that simply gets the control property
+   ///   value.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   /// <exception cref="InvalidOperationException">
+   ///   The <paramref name="builder"/> CurrentControl type is not
+   ///   <see cref="CheckBox"/>.
+   /// </exception>
+   public static MvcBuilder<M> BindFromCheckBoxCheckedProperty<M>(
+      this MvcBuilder<M> builder,
+      String modelProperty,
+      Func<Control, Boolean>? propertyGetter = null) where M : IMvcModel
+   {
+      if (builder.CurrentControl is not CheckBox checkBox)
+      {
+         throw new InvalidOperationException(Messages.BindFromCheckedPropertyRequiresCheckBox);
+      }
+
+      return builder.BindFromControlProperty<EventArgs, Boolean>(
+         nameof(CheckBox.Checked),
+         modelProperty,
+         propertyGetter: propertyGetter);
+   }
+
+   /// <summary>
    ///   Create a one-way binding from a control's Enabled property to a model 
    ///   property.
    /// </summary>
@@ -315,6 +355,43 @@ public static class ControlExtensions
       => builder.BindToControlProperty<Color>(modelProperty, nameof(Control.BackColor), propertyGetter);
 
    /// <summary>
+   ///   Create a one-way binding from a model property to a 
+   ///   <see cref="CheckBox"/> control's Checked property.
+   /// </summary>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The name of the model property to monitor for changes.
+   /// </param>
+   /// <param name="propertyGetter">
+   ///   Optional. Function that gets the model property and possibly converts
+   ///   the model property to a value suitable to assign to the control
+   ///   property. Defaults to a function that simply gets the model property
+   ///   value.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   /// <exception cref="InvalidOperationException">
+   ///   The <paramref name="builder"/> CurrentControl type is not
+   ///   <see cref="CheckBox"/>.
+   /// </exception>
+   public static MvcBuilder<M> BindToCheckBoxCheckedProperty<M>(
+      this MvcBuilder<M> builder,
+      String modelProperty,
+      Func<M, Boolean>? propertyGetter = null) where M : IMvcModel
+   {
+      if (builder.CurrentControl is not CheckBox checkBox)
+      {
+         throw new InvalidOperationException(Messages.BindFromCheckedPropertyRequiresCheckBox);
+      }
+
+      return builder.BindToControlProperty<Boolean>(modelProperty, nameof(CheckBox.Checked), propertyGetter);
+   }
+
+   /// <summary>
    ///   Create a one-way binding from a model property to a control's 
    ///   DataSource property.
    /// </summary>
@@ -436,6 +513,36 @@ public static class ControlExtensions
       String modelProperty,
       Func<M, Boolean>? propertyGetter = null) where M : IMvcModel
       => builder.BindToControlProperty<Boolean>(modelProperty, nameof(Control.Visible), propertyGetter);
+
+   /// <summary>
+   ///   Create a two-way binding between a model property and a
+   ///   <see cref="CheckBox"/> control's Checked property.
+   /// </summary>
+   /// <remarks>
+   ///   This is a convenience method that combines two one-way binding methods,
+   ///   <see cref="BindToCheckBoxCheckedProperty{M}(MvcBuilder{M}, String, Func{M, Boolean}?)"/>
+   ///   and <see cref="BindFromCheckBoxCheckedProperty{M}(MvcBuilder{M}, String, Func{Control, Boolean}?)"/>
+   ///   that are commonly used together.
+   /// </remarks>
+   /// <param name="builder">
+   ///   The <see cref="MvcBuilder{M}"/> object.
+   /// </param>
+   /// <param name="modelProperty">
+   ///   The name of the model property to bind to the control Text property.
+   /// </param>
+   /// <returns>
+   ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   public static MvcBuilder<M> BindToFromCheckBoxCheckedProperty<M>(
+      this MvcBuilder<M> builder,
+      String modelProperty) where M : IMvcModel
+   {
+      builder.BindToCheckBoxCheckedProperty(modelProperty);
+      builder.BindFromCheckBoxCheckedProperty(modelProperty);
+
+      return builder;
+   }
 
    /// <summary>
    ///   Create a two-way binding between a model property and a control's Text

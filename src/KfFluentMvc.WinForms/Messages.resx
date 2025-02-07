@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BindFromCheckedPropertyRequiresCheckBox" xml:space="preserve">
+    <value>Binding to the Checked propery requires that the current control be of type CheckBox</value>
+  </data>
   <data name="ComponentMustBeToolStripItem" xml:space="preserve">
     <value>Current component must be of type ToolStripItem</value>
   </data>

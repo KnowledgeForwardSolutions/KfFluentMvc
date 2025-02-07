@@ -61,6 +61,15 @@ namespace KfFluentMvc.WinForms {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Binding to the Checked propery requires that the current control be of type CheckBox.
+        /// </summary>
+        internal static string BindFromCheckedPropertyRequiresCheckBox {
+            get {
+                return ResourceManager.GetString("BindFromCheckedPropertyRequiresCheckBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current component must be of type ToolStripItem.
         /// </summary>
         internal static string ComponentMustBeToolStripItem {

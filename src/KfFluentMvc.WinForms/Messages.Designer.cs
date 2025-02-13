@@ -70,6 +70,24 @@ namespace KfFluentMvc.WinForms {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attempt to create a model binding without first setting the object to bind to. Invoke the MvcBuilder&lt;M&gt;.WithTarget method before creating bindings.
+        /// </summary>
+        internal static string BindingTargetNotSet {
+            get {
+                return ResourceManager.GetString("BindingTargetNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected MvcBuilder&lt;M&gt;.CurrentBoundObject to be of type {0}.
+        /// </summary>
+        internal static string BoundObjectInvalidType {
+            get {
+                return ResourceManager.GetString("BoundObjectInvalidType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current component must be of type ToolStripItem.
         /// </summary>
         internal static string ComponentMustBeToolStripItem {

@@ -1,23 +1,20 @@
 ﻿namespace KfFluentMvc.WinForms.Bindings;
 
 /// <summary>
-///   Defines a one way binding from a model property to a target object
-///   property. The target object property is updated whenever the model 
-///   broadcasts a notification that its property has changed.
+///   Defines a one way binding from a model property to a control property.
+///   The control property is updated whenever the model broadcasts a 
+///   notification that its property has changed.
 /// </summary>
 /// <typeparam name="M">
 ///   The bound model type.
 /// </typeparam>
-/// <typeparam name="T">
-///   The type of the binding target object.
-/// </typeparam>
 /// <typeparam name="P">
-///   The type of the target's bound property.
+///   The type of the control's bound property.
 /// </typeparam>
-public class ModelPropertyBinding<M, T, P> : ModelPropertyBindingBase<M, P>
+public class ModelPropertyBindingOld<M, P> : ModelPropertyBindingBase<M, P>
    where M : IMvcModel
 {
-   protected PropertyInfo _targetPropertyInfo;
+   protected PropertyInfo _controlPropertyInfo;
 
    /// <summary>
    ///   Initialize a new <see cref="ModelPropertyBindingOld{M, C}"/>.
@@ -25,14 +22,14 @@ public class ModelPropertyBinding<M, T, P> : ModelPropertyBindingBase<M, P>
    /// <param name="model">
    ///   The model to monitor for property changes.
    /// </param>
-   /// <param name="target">
-   ///   The target object to update when the model property changes.
+   /// <param name="control">
+   ///   The <see cref="Control"/> to update when the model property changes.
    /// </param>
    /// <param name="modelProperty">
    ///   The name of the model property to monitor for changes.
    /// </param>
-   /// <param name="targetProperty">
-   ///   The name of the target property to set when the model property changes.
+   /// <param name="controlProperty">
+   ///   The control property to set when the model property changes.
    /// </param>
    /// <param name="propertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
@@ -43,51 +40,51 @@ public class ModelPropertyBinding<M, T, P> : ModelPropertyBindingBase<M, P>
    /// <exception cref="ArgumentNullException">
    ///   <paramref name="model"/> is <see langword="null"/>.
    ///   - or -
-   ///   <paramref name="target"/> is <see langword="null"/>.
+   ///   <paramref name="control"/> is <see langword="null"/>.
    ///   - or -
    ///   <paramref name="modelProperty"/> is <see langword="null"/>.
    ///   - or -
-   ///   <paramref name="targetProperty"/> is <see langword="null"/>.
+   ///   <paramref name="controlProperty"/> is <see langword="null"/>.
    /// </exception>
    /// <exception cref="ArgumentException">
    ///   <paramref name="modelProperty"/> is <see cref="String.Empty"/> or all
    ///   whitespace characters.
    ///   - or -
-   ///   <paramref name="targetProperty"/> is <see cref="String.Empty"/> or all
+   ///   <paramref name="controlProperty"/> is <see cref="String.Empty"/> or all
    ///   whitespace characters.
    /// </exception>
    /// <exception cref="InvalidOperationException">
    ///   <paramref name="model"/> does not implement a property named 
    ///   <paramref name="modelProperty"/>.
    ///   - or -
-   ///   <paramref name="target"/> does not implement a property named 
-   ///   <paramref name="targetProperty"/>.
+   ///   <paramref name="control"/> does not implement a property named 
+   ///   <paramref name="controlProperty"/>.
    /// </exception>
-   public ModelPropertyBinding(
-      M model,
-      T target,
+   public ModelPropertyBindingOld(
+      M model, 
+      Control control,
       String modelProperty,
-      String targetProperty,
+      String controlProperty,
       Func<M, P>? propertyGetter = null) : base(model, modelProperty, propertyGetter)
    {
       ArgumentNullException.ThrowIfNull(model, nameof(model));
-      ArgumentNullException.ThrowIfNull(target, nameof(target));
+      ArgumentNullException.ThrowIfNull(control, nameof(control));
       ArgumentNullException.ThrowIfNullOrWhiteSpace(modelProperty, nameof(modelProperty));
-      ArgumentNullException.ThrowIfNullOrWhiteSpace(targetProperty, nameof(targetProperty));
+      ArgumentNullException.ThrowIfNullOrWhiteSpace(controlProperty, nameof(controlProperty));
 
-      Target = target;
-      _targetPropertyInfo = Target.GetPropertyInfo(targetProperty);
+      Control = control;
+      _controlPropertyInfo = Control.GetPropertyInfo(controlProperty);
    }
 
    /// <summary>
-   ///   The bound target object.
+   ///   The bound control.
    /// </summary>
-   public T Target { get; private set; }
+   public Control Control { get; private set; }
 
    protected override void ReleaseResources()
    {
-      _targetPropertyInfo = default!;
-      Target = default!;
+      _controlPropertyInfo = default!;
+      Control = default!;
 
       base.ReleaseResources();
    }
@@ -95,6 +92,6 @@ public class ModelPropertyBinding<M, T, P> : ModelPropertyBindingBase<M, P>
    protected override void HandlePropertyChanged(PropertyChangedEventArgs e)
    {
       var value = _propertyGetter(Model);
-      _targetPropertyInfo.SetValue(Target, value);
+      _controlPropertyInfo.SetValue(Control, value);
    }
 }

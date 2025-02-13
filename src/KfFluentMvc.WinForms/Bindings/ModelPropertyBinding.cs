@@ -20,7 +20,7 @@ public class ModelPropertyBinding<M, T, P> : ModelPropertyBindingBase<M, P>
    protected PropertyInfo _targetPropertyInfo;
 
    /// <summary>
-   ///   Initialize a new <see cref="ModelPropertyBindingOld{M, C}"/>.
+   ///   Initialize a new <see cref="ModelPropertyBinding{M, T, C}"/>.
    /// </summary>
    /// <param name="model">
    ///   The model to monitor for property changes.

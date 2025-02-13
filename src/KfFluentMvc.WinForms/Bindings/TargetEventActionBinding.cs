@@ -15,31 +15,34 @@
 /// <typeparam name="M">
 ///   The bound model type.
 /// </typeparam>
+/// <typeparam name="T">
+///   The target object type.
+/// </typeparam>
 /// <typeparam name="E">
 ///   The event argument type.
 /// </typeparam>
-public class ControlEventActionBinding<M, E> : MvcBindingBase<M>
+public class TargetEventActionBinding<M, T, E> : MvcBindingBase<M>
    where M : IMvcModel
    where E : EventArgs
 {
-   protected EventInfo _controlEventInfo;
+   protected EventInfo _targetEventInfo;
    protected Delegate _handlerDelegate;
-   protected Action<M, Control> _action;
+   protected Action<M, T> _action;
 
    /// <summary>
-   ///   Initialize a new <see cref="ControlEventActionBinding{M}"/>.
+   ///   Initialize a new <see cref="TargetEventActionBinding{M, T, E}"/>.
    /// </summary>
    /// <param name="model">
    ///   The bound model.
    /// </param>
-   /// <param name="control">
-   ///   The control to monitor for event notifications.
+   /// <param name="target">
+   ///   The target object to monitor for event notifications.
    /// </param>
-   /// <param name="controlEvent">
-   ///   The name of the control event to monitor.
+   /// <param name="targetEvent">
+   ///   The name of the target object event to monitor.
    /// </param>
    /// <param name="action">
-   ///   Action to perform when control event is fired.
+   ///   Action to perform when target object event is fired.
    /// </param>
    /// <param name="modelMethod">
    ///   The name of the method to invoke on the model.
@@ -47,62 +50,62 @@ public class ControlEventActionBinding<M, E> : MvcBindingBase<M>
    /// <exception cref="ArgumentNullException">
    ///   <paramref name="model"/> is <see langword="null"/>.
    ///   - or -
-   ///   <paramref name="control"/> is <see langword="null"/>.
+   ///   <paramref name="target"/> is <see langword="null"/>.
    ///   - or -
-   ///   <paramref name="controlEvent"/> is <see langword="null"/>.
+   ///   <paramref name="targetEvent"/> is <see langword="null"/>.
    ///   - or -
    ///   <paramref name="action"/> is <see langword="null"/>.
    /// </exception>
    /// <exception cref="ArgumentException">
-   ///   <paramref name="controlEvent"/> is <see cref="String.Empty"/> or all
+   ///   <paramref name="targetEvent"/> is <see cref="String.Empty"/> or all
    ///   whitespace characters.
    /// </exception>
    /// <exception cref="InvalidOperationException">
-   ///   <paramref name="control"/> does not implement an event named 
-   ///   <paramref name="controlEvent"/>.
+   ///   <paramref name="target"/> does not implement an event named 
+   ///   <paramref name="targetEvent"/>.
    /// </exception>
-   public ControlEventActionBinding(
+   public TargetEventActionBinding(
       M model,
-      Control control,
-      String controlEvent,
-      Action<M, Control> action) : base(model)
+      T target,
+      String targetEvent,
+      Action<M, T> action) : base(model)
    {
       ArgumentNullException.ThrowIfNull(model, nameof(model));
-      ArgumentNullException.ThrowIfNull(control, nameof(control));
-      ArgumentNullException.ThrowIfNullOrWhiteSpace(controlEvent, nameof(controlEvent));
+      ArgumentNullException.ThrowIfNull(target, nameof(target));
+      ArgumentNullException.ThrowIfNullOrWhiteSpace(targetEvent, nameof(targetEvent));
       ArgumentNullException.ThrowIfNull(action, nameof(action));
 
-      Control = control;
+      Target = target;
       _action = action;
 
       // see https://stackoverflow.com/questions/45779/c-sharp-dynamic-event-subscription
-      _controlEventInfo = Control.GetEventInfo(controlEvent);
-      var handlerMethodInfo = this.GetMethodInfo(nameof(Control_Event));
+      _targetEventInfo = Target.GetEventInfo(targetEvent);
+      var handlerMethodInfo = this.GetMethodInfo(nameof(Target_Event));
       _handlerDelegate = Delegate.CreateDelegate(
-         _controlEventInfo.EventHandlerType!,
+         _targetEventInfo.EventHandlerType!,
          this,
          handlerMethodInfo);
-      _controlEventInfo.AddEventHandler(Control, _handlerDelegate);
+      _targetEventInfo.AddEventHandler(Target, _handlerDelegate);
    }
 
    /// <summary>
-   ///   The bound control.
+   ///   The bound target object.
    /// </summary>
-   public Control Control { get; private set; }
+   public T Target { get; private set; }
 
 #pragma warning disable IDE0060 // Remove unused parameter
-   public void Control_Event(Object? sender, E e)
-      => _action(Model, Control);
+   public void Target_Event(Object? sender, E e)
+      => _action(Model, Target);
 #pragma warning restore IDE0060 // Remove unused parameter
 
    protected override void ReleaseResources()
    {
-      _controlEventInfo.RemoveEventHandler(Control, _handlerDelegate);
+      _targetEventInfo.RemoveEventHandler(Target, _handlerDelegate);
 
-      _controlEventInfo = default!;
+      _targetEventInfo = default!;
       _handlerDelegate = default!;
       _action = default!;
-      Control = default!;
+      Target = default!;
 
       base.ReleaseResources();
    }

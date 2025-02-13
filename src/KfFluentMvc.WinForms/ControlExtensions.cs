@@ -23,7 +23,7 @@ public static class ControlExtensions
    public static MvcBuilder<M> BindFromControlClickEvent<M>(
       this MvcBuilder<M> builder,
       String modelMethod) where M : IMvcModel
-      => builder.BindFromControlEvent<EventArgs>(nameof(Control.Click), modelMethod);
+      => builder.BindFromTargetEvent<Control, EventArgs>(nameof(Control.Click), modelMethod);
 
    /// <summary>
    ///   Create a binding that invokes an <see cref="Action{M,Control}"/> in
@@ -39,10 +39,10 @@ public static class ControlExtensions
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   public static MvcBuilder<M> BindFromControlClickEvent<M>(
+   public static MvcBuilder<M> BindFromControlClickEvent<M, T>(
       this MvcBuilder<M> builder,
-      Action<M, Control> action) where M : IMvcModel
-      => builder.BindFromControlEvent<EventArgs>(nameof(Control.Click), action);
+      Action<M, T> action) where M : IMvcModel
+      => builder.BindFromTargetEvent<T, EventArgs>(nameof(Control.Click), action);
 
    /// <summary>
    ///   Create a binding that invokes an action that involves a second control
@@ -162,17 +162,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<Control, Boolean>? propertyGetter = null) where M : IMvcModel
-   {
-      if (builder.CurrentControl is not CheckBox checkBox)
-      {
-         throw new InvalidOperationException(Messages.BindFromCheckedPropertyRequiresCheckBox);
-      }
-
-      return builder.BindFromControlProperty<EventArgs, Boolean>(
+      => builder.BindFromTargetProperty<CheckBox, EventArgs, Boolean>(
          nameof(CheckBox.Checked),
          modelProperty,
-         propertyGetter: propertyGetter);
-   }
+         propertyGetter: propertyGetter);   //{
 
    /// <summary>
    ///   Create a one-way binding from a control's Enabled property to a model 
@@ -198,7 +191,7 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<Control, Boolean>? propertyGetter) where M : IMvcModel
-      => builder.BindFromControlProperty<EventArgs, Boolean>(
+      => builder.BindFromTargetProperty<Control, EventArgs, Boolean>(
          nameof(Control.Enabled), 
          modelProperty, 
          propertyGetter: propertyGetter);
@@ -227,7 +220,7 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<Control, String>? propertyGetter = null) where M : IMvcModel
-      => builder.BindFromControlProperty<EventArgs, String>(
+      => builder.BindFromTargetProperty<Control, EventArgs, String>(
          nameof(Control.Text), 
          modelProperty, 
          propertyGetter: propertyGetter);
@@ -256,7 +249,7 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<Control, Boolean>? propertyGetter) where M : IMvcModel
-      => builder.BindFromControlProperty<EventArgs, Boolean>(
+      => builder.BindFromTargetProperty<Control, EventArgs, Boolean>(
          nameof(Control.Visible), 
          modelProperty, 
          propertyGetter: propertyGetter);
@@ -352,7 +345,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<M, Color>? propertyGetter = null) where M : IMvcModel
-      => builder.BindToControlProperty<Color>(modelProperty, nameof(Control.BackColor), propertyGetter);
+      => builder.BindToTargetProperty<Control, Color>(
+         modelProperty, 
+         nameof(Control.BackColor), 
+         propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a 
@@ -382,14 +378,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<M, Boolean>? propertyGetter = null) where M : IMvcModel
-   {
-      if (builder.CurrentControl is not CheckBox checkBox)
-      {
-         throw new InvalidOperationException(Messages.BindFromCheckedPropertyRequiresCheckBox);
-      }
-
-      return builder.BindToControlProperty<Boolean>(modelProperty, nameof(CheckBox.Checked), propertyGetter);
-   }
+      => builder.BindToTargetProperty<Control, Boolean>(
+         modelProperty, 
+         nameof(CheckBox.Checked), 
+         propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's 
@@ -408,7 +400,9 @@ public static class ControlExtensions
    public static MvcBuilder<M> BindToControlDataSourceProperty<M, I>(
       this MvcBuilder<M> builder,
       String modelProperty) where M : IMvcModel
-      => builder.BindToControlProperty<BindingList<I>>(modelProperty, nameof(ListControl.DataSource));
+      => builder.BindToTargetProperty<Control, BindingList<I>>(
+         modelProperty, 
+         nameof(ListControl.DataSource));
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's Enabled
@@ -434,7 +428,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<M, Boolean>? propertyGetter = null) where M : IMvcModel
-      => builder.BindToControlProperty<Boolean>(modelProperty, nameof(Control.Enabled), propertyGetter);
+      => builder.BindToTargetProperty<Control, Boolean>(
+         modelProperty, 
+         nameof(Control.Enabled), 
+         propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's ForeColor
@@ -460,7 +457,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<M, Color>? propertyGetter = null) where M : IMvcModel
-      => builder.BindToControlProperty<Color>(modelProperty, nameof(Control.ForeColor), propertyGetter);
+      => builder.BindToTargetProperty<Control, Color>(
+         modelProperty, 
+         nameof(Control.ForeColor), 
+         propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's Text
@@ -486,7 +486,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<M, String>? propertyGetter = null) where M : IMvcModel
-      => builder.BindToControlProperty<String>(modelProperty, nameof(Control.Text), propertyGetter);
+      => builder.BindToTargetProperty<Control, String>(
+         modelProperty, 
+         nameof(Control.Text), 
+         propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a control's Visible
@@ -512,7 +515,10 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty,
       Func<M, Boolean>? propertyGetter = null) where M : IMvcModel
-      => builder.BindToControlProperty<Boolean>(modelProperty, nameof(Control.Visible), propertyGetter);
+      => builder.BindToTargetProperty<Control, Boolean>(
+         modelProperty, 
+         nameof(Control.Visible), 
+         propertyGetter);
 
    /// <summary>
    ///   Create a two-way binding between a model property and a

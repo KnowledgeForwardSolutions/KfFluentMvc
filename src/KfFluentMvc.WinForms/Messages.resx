@@ -124,7 +124,7 @@
     <value>Attempt to create a model binding without first setting the object to bind to. Invoke the MvcBuilder&lt;M&gt;.WithTarget method before creating bindings</value>
   </data>
   <data name="BoundObjectInvalidType" xml:space="preserve">
-    <value>Expected MvcBuilder&lt;M&gt;.CurrentBoundObject to be of type {0}</value>
+    <value>Expected MvcBuilder&lt;M&gt;.CurrentTarget to be of type {0}</value>
   </data>
   <data name="ComponentMustBeToolStripItem" xml:space="preserve">
     <value>Current component must be of type ToolStripItem</value>

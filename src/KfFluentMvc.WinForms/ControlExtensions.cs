@@ -274,11 +274,17 @@ public static class ControlExtensions
    /// </returns>
    public static MvcBuilder<M> BindModelPropertyErrorToControlVisible<M>(
       this MvcBuilder<M> builder,
-      String modelProperty) where M : IMvcModel
+      String modelProperty) where M : IValidatingMvcModel
    {
+      if (builder.CurrentTarget is not Control target)
+      {
+         var message = String.Format(Messages.BoundObjectInvalidType, typeof(Control).Name);
+         throw new InvalidOperationException(message);
+      }
+
       var binding = new ModelPropertyErrorToControlVisibleBinding<M>(
          builder.Model,
-         builder.CurrentControl,
+         target,
          modelProperty);
       builder.WithBinding(binding);
 
@@ -309,11 +315,17 @@ public static class ControlExtensions
    public static MvcBuilder<M> BindModelPropertyErrorToToolTip<M>(
       this MvcBuilder<M> builder,
       String modelProperty,
-      ToolTip toolTip) where M : IMvcModel
+      ToolTip toolTip) where M : IValidatingMvcModel
    {
+      if (builder.CurrentTarget is not Control target)
+      {
+         var message = String.Format(Messages.BoundObjectInvalidType, typeof(Control).Name);
+         throw new InvalidOperationException(message);
+      }
+
       var binding = new ModelPropertyErrorToToolTipBinding<M>(
          builder.Model,
-         builder.CurrentControl,
+         target,
          toolTip,
          modelProperty);
       builder.WithBinding(binding);

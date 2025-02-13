@@ -79,7 +79,7 @@ namespace KfFluentMvc.WinForms {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expected MvcBuilder&lt;M&gt;.CurrentBoundObject to be of type {0}.
+        ///   Looks up a localized string similar to Expected MvcBuilder&lt;M&gt;.CurrentTarget to be of type {0}.
         /// </summary>
         internal static string BoundObjectInvalidType {
             get {

@@ -40,7 +40,6 @@ public abstract class ModelPropertyBindingBase<M, P> : MvcBindingBase<M>
    /// <exception cref="ArgumentException">
    ///   <paramref name="modelProperty"/> is <see cref="String.Empty"/> or all
    ///   whitespace characters.
-   ///   whitespace characters.
    /// </exception>
    /// <exception cref="InvalidOperationException">
    ///   <paramref name="model"/> does not implement a property named 

@@ -72,7 +72,7 @@ public static class ControlExtensions
       builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not T1 primaryTarget)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T1).Name);
+         var message = Messages.BoundObjectInvalidType.Format(typeof(T1).Name);
          throw new InvalidOperationException(message);
       }
 
@@ -115,7 +115,7 @@ public static class ControlExtensions
       builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not T1 primaryTarget)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T1).Name);
+         var message = Messages.BoundObjectInvalidType.Format(typeof(T1).Name);
          throw new InvalidOperationException(message);
       }
 
@@ -267,7 +267,7 @@ public static class ControlExtensions
       builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not Control target)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, nameof(Control));
+         var message = Messages.BoundObjectInvalidType.Format(nameof(Control));
          throw new InvalidOperationException(message);
       }
 
@@ -309,7 +309,7 @@ public static class ControlExtensions
       builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not Control target)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, nameof(Control));
+         var message = Messages.BoundObjectInvalidType.Format(nameof(Control));
          throw new InvalidOperationException(message);
       }
 

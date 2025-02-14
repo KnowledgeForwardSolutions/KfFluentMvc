@@ -39,7 +39,7 @@ public static class TreeViewExtensions
       builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not TreeView treeView)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
+         var message = Messages.BoundObjectInvalidType.Format(nameof(TreeView));
          throw new InvalidOperationException(message);
       }
 
@@ -88,7 +88,7 @@ public static class TreeViewExtensions
       builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not TreeView treeView)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
+         var message = Messages.BoundObjectInvalidType.Format(nameof(TreeView));
          throw new InvalidOperationException(message);
       }
 
@@ -133,7 +133,7 @@ public static class TreeViewExtensions
       builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not TreeView treeView)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
+         var message = Messages.BoundObjectInvalidType.Format(nameof(TreeView));
          throw new InvalidOperationException(message);
       }
 

@@ -61,7 +61,7 @@ public class MvcBuilder<M>
       ThrowIfTargetNotSet();
       if (CurrentTarget is not T target)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T).Name);
+         var message = Messages.BoundObjectInvalidType.Format(typeof(T).Name);
          throw new InvalidOperationException(message);
       }
 
@@ -150,7 +150,7 @@ public class MvcBuilder<M>
       ThrowIfTargetNotSet();
       if (CurrentTarget is not T target)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T).Name);
+         var message = Messages.BoundObjectInvalidType.Format(typeof(T).Name);
          throw new InvalidOperationException(message);
       }
 
@@ -206,7 +206,7 @@ public class MvcBuilder<M>
       ThrowIfTargetNotSet();
       if (CurrentTarget is not T target)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T).Name);
+         var message = Messages.BoundObjectInvalidType.Format(typeof(T).Name);
          throw new InvalidOperationException(message);
       }
 

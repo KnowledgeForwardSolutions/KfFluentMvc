@@ -2,13 +2,13 @@
 
 /// <summary>
 ///   Methods that extend <see cref="MvcBuilder{M}"/> capabilities with 
-///   <see cref="NumericUpDown"/> controls.
+///   <see cref="ListControl"/> controls.
 /// </summary>
-public static class NumericUpDownExtensions
+public static class ListControlExtensions
 {
    /// <summary>
-   ///   Create a one-way binding from a <see cref="NumericUpDown"/> control's 
-   ///   Value property to a model property.
+   ///   Create a one-way binding from a <see cref="ComboBox"/> or a 
+   ///   <see cref="ListBox"/> control's SelectedItem to a model property.
    /// </summary>
    /// <param name="builder">
    ///   The <see cref="MvcBuilder{M}"/> object.
@@ -17,8 +17,8 @@ public static class NumericUpDownExtensions
    ///   The model property to set when the control property changes.
    /// </param>
    /// <param name="targetPropertyGetter">
-   ///   Optional. Function that gets the target control's Value property and 
-   ///   possibly converts the value to one suitable to assign to the model
+   ///   Optional. Function that gets the target control's SelectedItem property 
+   ///   and possibly converts the value to one suitable to assign to the model
    ///   property. Defaults to a function that simply gets the target control's 
    ///   Value property value.
    /// </param>
@@ -26,18 +26,28 @@ public static class NumericUpDownExtensions
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   public static MvcBuilder<M> BindFromNumericUpDownValueProperty<M, P>(
+   /// <remarks>
+   ///   Neither <see cref="ComboBox"/> nor <see cref="ListBox"/> have a 
+   ///   SelectedItemChanged event so this binding listens for the 
+   ///   SelectedIndexChanged event and retrieves the SelectedItem when the
+   ///   event fires.
+   /// </remarks>
+   public static MvcBuilder<M> BindFromListControlSelectedItemProperty<M, T, P>(
       this MvcBuilder<M> builder,
       String modelProperty,
-      Func<NumericUpDown, P>? propertyGetter = null) where M : IMvcModel
-      => builder.BindFromTargetProperty<NumericUpDown, EventArgs, P>(
-         nameof(NumericUpDown.Value),
+      Func<T, P>? propertyGetter = null)
+      where M : IMvcModel
+      where T : ListControl
+      => builder.BindFromTargetProperty<T, EventArgs, P>(
+         nameof(ComboBox.SelectedItem),
          modelProperty,
+         nameof(ComboBox.SelectedIndexChanged),
          propertyGetter: propertyGetter);
 
    /// <summary>
    ///   Create a one-way binding from a model property to a 
-   ///   <see cref="NumericUpDown"/> control's Value property.
+   ///   <see cref="ComboBox"/> or a <see cref="ListBox"/> control's 
+   ///   SelectedItem property.
    /// </summary>
    /// <param name="builder">
    ///   The <see cref="MvcBuilder{M}"/> object.
@@ -48,25 +58,28 @@ public static class NumericUpDownExtensions
    /// <param name="modelPropertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
    ///   the model property to a value suitable to assign to the target 
-   ///   control's Value property. Defaults to a function that simply gets the 
-   ///   model property value.
+   ///   control's SelectedItem property. Defaults to a function that simply 
+   ///   gets the model property value.
    /// </param>
    /// <returns>
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   public static MvcBuilder<M> BindToNumericUpDownValueProperty<M>(
+   public static MvcBuilder<M> BindToListControlSelectedItemProperty<M, T, P>(
       this MvcBuilder<M> builder,
       String modelProperty,
-      Func<M, Decimal>? propertyGetter = null) where M : IMvcModel
-      => builder.BindToTargetProperty<NumericUpDown, Decimal>(
+      Func<M, P>? propertyGetter = null) 
+      where M : IMvcModel
+      where T : ListControl
+      => builder.BindToTargetProperty<T, P>(
          modelProperty,
-         nameof(NumericUpDown.Value),
+         nameof(ComboBox.SelectedItem),
          propertyGetter);
 
    /// <summary>
    ///   Create a two-way binding between a model property and a
-   ///   <see cref="NumericUpDown"/> control's Value property.
+   ///   <see cref="ComboBox"/> or a <see cref="ListBox"/> control's 
+   ///   SelectedItem property.
    /// </summary>
    /// <remarks>
    ///   This is a convenience method that combines two one-way binding methods,
@@ -80,30 +93,18 @@ public static class NumericUpDownExtensions
    /// <param name="modelProperty">
    ///   The name of the model property to bind to the control Text property.
    /// </param>
-   /// <param name="modelPropertyGetter">
-   ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the target 
-   ///   control's Value property. Defaults to a function that simply gets the 
-   ///   model property value.
-   /// </param>
-   /// <param name="targetPropertyGetter">
-   ///   Optional. Function that gets the target control's Value property and 
-   ///   possibly converts the value to one suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the target control's 
-   ///   Value property value.
-   /// </param>
    /// <returns>
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   public static MvcBuilder<M> BindToFromNumericUpDownValueProperty<M, P>(
+   public static MvcBuilder<M> BindToFromListControlSelectedItemProperty<M, T, P>(
       this MvcBuilder<M> builder,
-      String modelProperty,
-      Func<M, Decimal>? modelPropertyGetter = null,
-      Func<NumericUpDown, P>? targetPropertyGetter = null) where M : IMvcModel
+      String modelProperty) 
+      where M : IMvcModel
+      where T : ListControl
    {
-      builder.BindToNumericUpDownValueProperty(modelProperty, modelPropertyGetter);
-      builder.BindFromNumericUpDownValueProperty<M, P>(modelProperty, targetPropertyGetter);
+      builder.BindToListControlSelectedItemProperty<M, T, P>(modelProperty);
+      builder.BindFromListControlSelectedItemProperty<M, T, P>(modelProperty);
 
       return builder;
    }

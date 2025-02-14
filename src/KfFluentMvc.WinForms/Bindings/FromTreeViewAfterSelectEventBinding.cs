@@ -25,8 +25,9 @@ public class FromTreeViewAfterSelectEventBinding<M, P> : MvcBindingBase<M>
    /// <param name="model">
    ///   The bound model.
    /// </param>
-   /// <param name="control">
-   ///   The control to monitor for event notifications.
+   /// <param name="target">
+   ///   The target <see cref="TreeView"/> control to monitor for event 
+   ///   notifications.
    /// </param>
    /// <param name="modelProperty">
    ///   The model property to set when the control event changes.
@@ -38,9 +39,7 @@ public class FromTreeViewAfterSelectEventBinding<M, P> : MvcBindingBase<M>
    ///   <see cref="TreeNode.Tag"/> of the selected node.
    /// </param>
    /// <exception cref="ArgumentNullException">
-   ///   <paramref name="model"/> is <see langword="null"/>.
-   ///   - or -
-   ///   <paramref name="control"/> is <see langword="null"/>.
+   ///   <paramref name="target"/> is <see langword="null"/>.
    ///   - or -
    ///   <paramref name="modelProperty"/> is <see langword="null"/>.
    /// </exception>
@@ -54,41 +53,40 @@ public class FromTreeViewAfterSelectEventBinding<M, P> : MvcBindingBase<M>
    /// </exception>
    public FromTreeViewAfterSelectEventBinding(
       M model,
-      TreeView control,
+      TreeView target,
       String modelProperty,
       Func<TreeNode?, P?>? selectedValueGetter = null) : base(model)
    {
-      ArgumentNullException.ThrowIfNull(model, nameof(model));
-      ArgumentNullException.ThrowIfNull(control, nameof(control));
+      ArgumentNullException.ThrowIfNull(target, nameof(target));
       ArgumentNullException.ThrowIfNullOrWhiteSpace(modelProperty, nameof(modelProperty));
 
-      Control = control;
+      Target = target;
       _modelPropertyInfo = Model.GetPropertyInfo(modelProperty);
       _selectedValueGetter = selectedValueGetter ?? GetSelectedValue;
 
-      Control.AfterSelect += Control_AfterSelect;
+      Target.AfterSelect += Control_AfterSelect;
    }
 
    /// <summary>
-   ///   The bound control.
+   ///   The target <see cref="TreeView"/> control.
    /// </summary>
-   public TreeView Control { get; private set; }
+   public TreeView Target { get; private set; }
 
    private static P GetSelectedValue(TreeNode? node) => (P?)node?.Tag!;
 
    protected override void ReleaseResources()
    {
-      Control.AfterSelect -= Control_AfterSelect;
+      Target.AfterSelect -= Control_AfterSelect;
       _modelPropertyInfo = default!;
       _selectedValueGetter = default!;
-      Control = default!;
+      Target = default!;
 
       base.ReleaseResources();
    }
 
    protected void Control_AfterSelect(Object? sender, TreeViewEventArgs e)
    {
-      var value = _selectedValueGetter(Control.SelectedNode);
+      var value = _selectedValueGetter(Target.SelectedNode);
       _modelPropertyInfo.SetValue(Model, value);
    }
 }

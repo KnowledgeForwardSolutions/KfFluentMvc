@@ -278,7 +278,7 @@ public static class ControlExtensions
    {
       if (builder.CurrentTarget is not Control target)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, typeof(Control).Name);
+         var message = String.Format(Messages.BoundObjectInvalidType, nameof(Control));
          throw new InvalidOperationException(message);
       }
 
@@ -319,7 +319,7 @@ public static class ControlExtensions
    {
       if (builder.CurrentTarget is not Control target)
       {
-         var message = String.Format(Messages.BoundObjectInvalidType, typeof(Control).Name);
+         var message = String.Format(Messages.BoundObjectInvalidType, nameof(Control));
          throw new InvalidOperationException(message);
       }
 

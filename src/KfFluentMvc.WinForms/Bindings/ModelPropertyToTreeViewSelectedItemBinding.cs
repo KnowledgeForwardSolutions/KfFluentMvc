@@ -21,7 +21,7 @@ public class ModelPropertyToTreeViewSelectedItemBinding<M, P> : ModelPropertyBin
    /// <param name="model">
    ///   The model to monitor for property changes.
    /// </param>
-   /// <param name="control">
+   /// <param name="target">
    ///   The <see cref="TreeView"/> to update when the model property changes.
    /// </param>
    /// <param name="modelProperty">
@@ -34,45 +34,31 @@ public class ModelPropertyToTreeViewSelectedItemBinding<M, P> : ModelPropertyBin
    ///   property value's ToString method.
    /// </param>
    /// <exception cref="ArgumentNullException">
-   ///   <paramref name="model"/> is <see langword="null"/>.
-   ///   - or -
-   ///   <paramref name="control"/> is <see langword="null"/>.
-   ///   - or -
-   ///   <paramref name="modelProperty"/> is <see langword="null"/>.
-   /// </exception>
-   /// <exception cref="ArgumentException">
-   ///   <paramref name="modelProperty"/> is <see cref="String.Empty"/> or all
-   ///   whitespace characters.
-   /// </exception>
-   /// <exception cref="InvalidOperationException">
-   ///   <paramref name="model"/> does not implement a property named 
-   ///   <paramref name="modelProperty"/>.
+   ///   <paramref name="target"/> is <see langword="null"/>.
    /// </exception>
    public ModelPropertyToTreeViewSelectedItemBinding(
       M model,
-      TreeView control,
+      TreeView target,
       String modelProperty,
       Func<P, String>? keyGetter = null) : base(model, modelProperty)
    {
-      ArgumentNullException.ThrowIfNull(model, nameof(model));
-      ArgumentNullException.ThrowIfNull(control, nameof(control));
-      ArgumentNullException.ThrowIfNullOrWhiteSpace(modelProperty, nameof(modelProperty));
+      ArgumentNullException.ThrowIfNull(target, nameof(target));
 
-      Control = control;
+      Target = target;
       _keyGetter = keyGetter ?? GetKey;
    }
 
    /// <summary>
-   ///   The bound control.
+   ///   The target control.
    /// </summary>
-   public TreeView Control { get; private set; }
+   public TreeView Target { get; private set; }
 
    private static String GetKey(P propertyValue) => propertyValue!.ToString() ?? String.Empty;
 
    protected override void ReleaseResources()
    {
       _keyGetter = default!;
-      Control = default!;
+      Target = default!;
 
       base.ReleaseResources();
    }
@@ -84,13 +70,13 @@ public class ModelPropertyToTreeViewSelectedItemBinding<M, P> : ModelPropertyBin
       if (propertyValue is not null)
       {
          var key = _keyGetter(propertyValue);
-         var matchingNodes = Control.Nodes.Find(key, true);
+         var matchingNodes = Target.Nodes.Find(key, true);
          if (matchingNodes.Length > 0)
          {
             node = matchingNodes[0];
          }
       }
 
-      Control.SelectedNode = node;
+      Target.SelectedNode = node;
    }
 }

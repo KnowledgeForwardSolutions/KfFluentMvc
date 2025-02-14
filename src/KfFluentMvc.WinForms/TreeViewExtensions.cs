@@ -36,9 +36,10 @@ public static class TreeViewExtensions
       String modelProperty,
       Func<TreeNode?, P?>? selectedValueGetter = null) where M : IMvcModel
    {
-      if (builder.CurrentControl is not TreeView treeView)
+      if (builder.CurrentTarget is not TreeView treeView)
       {
-         throw new InvalidOperationException(Messages.ControlMustBeTreeView);
+         var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
+         throw new InvalidOperationException(message);
       }
 
       var binding = new FromTreeViewAfterSelectEventBinding<M, P>(
@@ -83,9 +84,10 @@ public static class TreeViewExtensions
       String modelProperty,
       Func<IEnumerable<I>?, IEnumerable<TreeNode>> collectionMapper) where M : IMvcModel
    {
-      if (builder.CurrentControl is not TreeView treeView)
+      if (builder.CurrentTarget is not TreeView treeView)
       {
-         throw new InvalidOperationException(Messages.ControlMustBeTreeView);
+         var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
+         throw new InvalidOperationException(message);
       }
 
       var binding = new ToTreeViewNodesPropertyBinding<M, I>(
@@ -126,9 +128,10 @@ public static class TreeViewExtensions
       String modelProperty,
       Func<P, String>? keyGetter = null) where M : IMvcModel
    {
-      if (builder.CurrentControl is not TreeView treeView)
+      if (builder.CurrentTarget is not TreeView treeView)
       {
-         throw new InvalidOperationException(Messages.ControlMustBeTreeView);
+         var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
+         throw new InvalidOperationException(message);
       }
 
       var binding = new ModelPropertyToTreeViewSelectedItemBinding<M, P>(

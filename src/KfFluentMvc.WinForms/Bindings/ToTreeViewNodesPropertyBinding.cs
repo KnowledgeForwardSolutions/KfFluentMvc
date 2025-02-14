@@ -23,8 +23,9 @@ public class ToTreeViewNodesPropertyBinding<M, I> : ModelPropertyBindingBase<M, 
    /// <param name="model">
    ///   The model to monitor for property changes.
    /// </param>
-   /// <param name="control">
-   ///   The <see cref="TreeView"/> to update when the model property changes.
+   /// <param name="target">
+   ///   The target <see cref="TreeView"/> to update when the model property 
+   ///   changes.
    /// </param>
    /// <param name="modelProperty">
    ///   The name of the model property to monitor for changes.
@@ -35,61 +36,47 @@ public class ToTreeViewNodesPropertyBinding<M, I> : ModelPropertyBindingBase<M, 
    ///   node hierarchy if more than one level deep.
    /// </param>
    /// <exception cref="ArgumentNullException">
-   ///   <paramref name="model"/> is <see langword="null"/>.
-   ///   - or -
-   ///   <paramref name="control"/> is <see langword="null"/>.
-   ///   - or -
-   ///   <paramref name="modelProperty"/> is <see langword="null"/>.
+   ///   <paramref name="target"/> is <see langword="null"/>.
    ///   - or -
    ///   <paramref name="collectionMapper"/> is <see langword="null"/>.
    /// </exception>
-   /// <exception cref="ArgumentException">
-   ///   <paramref name="modelProperty"/> is <see cref="String.Empty"/> or all
-   ///   whitespace characters.
-   /// </exception>
-   /// <exception cref="InvalidOperationException">
-   ///   <paramref name="model"/> does not implement a property named 
-   ///   <paramref name="modelProperty"/>.
-   /// </exception>
    public ToTreeViewNodesPropertyBinding(
       M model,
-      TreeView control,
+      TreeView target,
       String modelProperty,
       Func<IEnumerable<I>?, IEnumerable<TreeNode>> collectionMapper) : base(model, modelProperty)
    {
-      ArgumentNullException.ThrowIfNull(model, nameof(model));
-      ArgumentNullException.ThrowIfNull(control, nameof(control));
-      ArgumentNullException.ThrowIfNullOrWhiteSpace(modelProperty, nameof(modelProperty));
+      ArgumentNullException.ThrowIfNull(target, nameof(target));
       ArgumentNullException.ThrowIfNull(collectionMapper, nameof(collectionMapper));
 
-      Control = control;
+      Target = target;
       _collectionMapper = collectionMapper;
    }
 
    /// <summary>
    ///   The bound control.
    /// </summary>
-   public TreeView Control { get; private set; }
+   public TreeView Target { get; private set; }
 
    protected override void ReleaseResources()
    {
       _collectionMapper = default!;
-      Control = default!;
+      Target = default!;
 
       base.ReleaseResources();
    }
 
    protected override void HandlePropertyChanged(PropertyChangedEventArgs e)
    {
-      Control.BeginUpdate();
-      Control.Nodes.Clear();
+      Target.BeginUpdate();
+      Target.Nodes.Clear();
 
       var hierarchy = (IEnumerable<I>)_modelPropertyInfo.GetValue(Model)!;
       foreach (var item in _collectionMapper(hierarchy))
       {
-         Control.Nodes.Add(item);
+         Target.Nodes.Add(item);
       }
 
-      Control.EndUpdate();
+      Target.EndUpdate();
    }
 }

@@ -1,4 +1,4 @@
-﻿namespace KfFluentMvc.WinForms.Bindings;
+﻿namespace KfFluentMvc.WinForms.Bindings.Specialized;
 
 /// <summary>
 ///   Defines a one-way binding from a model property to a target control's 
@@ -47,7 +47,7 @@ public class ModelPropertyErrorToControlVisibleBinding<M> : ModelPropertyBinding
    /// </summary>
    public Control Target { get; private set; }
 
-   protected override void HandlePropertyChanged(PropertyChangedEventArgs e) => 
+   protected override void HandlePropertyChanged(PropertyChangedEventArgs e) =>
       Target.Visible = Model.Errors.PropertyHasError(_modelPropertyInfo.Name);
 
    protected override void ReleaseResources()

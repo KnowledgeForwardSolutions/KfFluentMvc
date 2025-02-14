@@ -36,11 +36,6 @@ public class MvcBuilder<M>
    public M Model { get; private init; }
 
    /// <summary>
-   ///   The <see cref="Control"/> to bind to.
-   /// </summary>
-   public Control CurrentControl { get; private set; } = default!;
-
-   /// <summary>
    ///   The target <see cref="Object"/> to bind to.
    /// </summary>
    public Object CurrentTarget { get; private set; } = default!;
@@ -277,26 +272,6 @@ public class MvcBuilder<M>
    }
 
    /// <summary>
-   ///   Set the <see cref="Control"/> that future bindings will bind to.
-   /// </summary>
-   /// <param name="control">
-   ///   The next <see cref="Control"/> to bind the model to.
-   /// </param>
-   /// <returns>
-   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
-   ///   chaining.
-   /// </returns>
-   public MvcBuilder<M> WithControl(Control control)
-   {
-      ArgumentNullException.ThrowIfNull(control, nameof(control));
-
-      CurrentControl = control;
-      CurrentTarget = default!;
-
-      return this;
-   }
-
-   /// <summary>
    ///   Set the target <see cref="Object"/> that future bindings will bind to.
    /// </summary>
    /// <param name="target">
@@ -311,12 +286,11 @@ public class MvcBuilder<M>
       ArgumentNullException.ThrowIfNull(target, nameof(target));
 
       CurrentTarget = target!;
-      CurrentControl = default!;
 
       return this;
    }
 
-   private void ThrowIfTargetNotSet()
+   internal void ThrowIfTargetNotSet()
    {
       if (CurrentTarget is null)
       {

@@ -1,4 +1,4 @@
-﻿namespace KfFluentMvc.WinForms.Bindings;
+﻿namespace KfFluentMvc.WinForms.Bindings.Specialized;
 
 /// <summary>
 ///   Defines a one-way binding from a <see cref="TreeView"/> control's 
@@ -58,7 +58,7 @@ public class FromTreeViewAfterSelectEventBinding<M, P> : MvcBindingBase<M>
       Func<TreeNode?, P?>? selectedValueGetter = null) : base(model)
    {
       ArgumentNullException.ThrowIfNull(target, nameof(target));
-      ArgumentNullException.ThrowIfNullOrWhiteSpace(modelProperty, nameof(modelProperty));
+      ArgumentException.ThrowIfNullOrWhiteSpace(modelProperty, nameof(modelProperty));
 
       Target = target;
       _modelPropertyInfo = Model.GetPropertyInfo(modelProperty);

@@ -51,7 +51,7 @@ public static class ControlExtensions
    /// <param name="builder">
    ///   The <see cref="MvcBuilder{M}"/> object.
    /// </param>
-   /// <param name="secondaryControl">
+   /// <param name="secondaryTarget">
    ///   The secondary control in the interaction.
    /// </param>
    /// <param name="action">
@@ -61,28 +61,26 @@ public static class ControlExtensions
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   /// <exception cref="InvalidOperationException">
-   ///   The <paramref name="builder"/> CurrentControl type does not match the 
-   ///   <typeparamref name="C1"/> type.
-   /// </exception>
-   public static MvcBuilder<M> BindFromControlClickEventWithSecondaryControl<M, C1, C2>(
+   public static MvcBuilder<M> BindFromControlClickEventWithSecondaryControl<M, T1, T2>(
       this MvcBuilder<M> builder,
-      C2 secondaryControl,
-      Action<M, C1, C2> action) 
+      T2 secondaryTarget,
+      Action<M, T1, T2> action) 
       where M : IMvcModel
-      where C1 : Control
-      where C2 : Control
+      where T1 : Control
+      where T2 : Control
    {
-      if (builder.CurrentControl is not C1 primaryControl)
+      builder.ThrowIfTargetNotSet();
+      if (builder.CurrentTarget is not T1 primaryTarget)
       {
-         throw new InvalidOperationException(Messages.PrimaryControlIncorrectType);
+         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T1).Name);
+         throw new InvalidOperationException(message);
       }
 
-      var binding = new TwoControlInteractionBinding<M, C1, C2>(
+      var binding = new TwoTargetInteractionBinding<M, T1, T2>(
          builder.Model,
-         primaryControl,
+         primaryTarget,
          nameof(Control.Click),
-         secondaryControl,
+         secondaryTarget,
          action);
       builder.WithBinding(binding);
 
@@ -96,7 +94,7 @@ public static class ControlExtensions
    /// <param name="builder">
    ///   The <see cref="MvcBuilder{M}"/> object.
    /// </param>
-   /// <param name="secondaryControl">
+   /// <param name="secondaryTarget">
    ///   The secondary control in the interaction.
    /// </param>
    /// <param name="action">
@@ -106,28 +104,26 @@ public static class ControlExtensions
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   /// <exception cref="InvalidOperationException">
-   ///   The <paramref name="builder"/> CurrentControl type does not match the 
-   ///   <typeparamref name="C1"/> type.
-   /// </exception>
-   public static MvcBuilder<M> BindFromControlDoubleClickEventWithSecondaryControl<M, C1, C2>(
+   public static MvcBuilder<M> BindFromControlDoubleClickEventWithSecondaryControl<M, T1, T2>(
       this MvcBuilder<M> builder,
-      C2 secondaryControl,
-      Action<M, C1, C2> action)
+      T2 secondaryTarget,
+      Action<M, T1, T2> action)
       where M : IMvcModel
-      where C1 : Control
-      where C2 : Control
+      where T1 : Control
+      where T2 : Control
    {
-      if (builder.CurrentControl is not C1 primaryControl)
+      builder.ThrowIfTargetNotSet();
+      if (builder.CurrentTarget is not T1 primaryTarget)
       {
-         throw new InvalidOperationException(Messages.PrimaryControlIncorrectType);
+         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T1).Name);
+         throw new InvalidOperationException(message);
       }
 
-      var binding = new TwoControlInteractionBinding<M, C1, C2>(
+      var binding = new TwoTargetInteractionBinding<M, T1, T2>(
          builder.Model,
-         primaryControl,
+         primaryTarget,
          nameof(Control.DoubleClick),
-         secondaryControl,
+         secondaryTarget,
          action);
       builder.WithBinding(binding);
 
@@ -145,19 +141,14 @@ public static class ControlExtensions
    ///   The model property to set when the control property changes.
    /// </param>
    /// <param name="propertyGetter">
-   ///   Optional. Function that gets the control property and possibly converts
-   ///   the control property to a value suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the control property
-   ///   value.
+   ///   Optional. Function that gets the target object property and possibly 
+   ///   converts the value to one suitable to assign to the model property. 
+   ///   Defaults to a function that simply gets the control property value.
    /// </param>
    /// <returns>
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   /// <exception cref="InvalidOperationException">
-   ///   The <paramref name="builder"/> CurrentControl type is not
-   ///   <see cref="CheckBox"/>.
-   /// </exception>
    public static MvcBuilder<M> BindFromCheckBoxCheckedProperty<M>(
       this MvcBuilder<M> builder,
       String modelProperty,
@@ -178,10 +169,9 @@ public static class ControlExtensions
    ///   The model property to set when the control property changes.
    /// </param>
    /// <param name="propertyGetter">
-   ///   Optional. Function that gets the control property and possibly converts
-   ///   the control property to a value suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the control property
-   ///   value.
+   ///   Optional. Function that gets the target object property and possibly 
+   ///   converts the value to one suitable to assign to the model property. 
+   ///   Defaults to a function that simply gets the control property value.
    /// </param>
    /// <returns>
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
@@ -207,10 +197,9 @@ public static class ControlExtensions
    ///   The model property to set when the control property changes.
    /// </param>
    /// <param name="propertyGetter">
-   ///   Optional. Function that gets the control property and possibly converts
-   ///   the control property to a value suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the control property
-   ///   value.
+   ///   Optional. Function that gets the target object property and possibly 
+   ///   converts the value to one suitable to assign to the model property. 
+   ///   Defaults to a function that simply gets the control property value.
    /// </param>
    /// <returns>
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
@@ -236,10 +225,9 @@ public static class ControlExtensions
    ///   The model property to set when the control property changes.
    /// </param>
    /// <param name="propertyGetter">
-   ///   Optional. Function that gets the control property and possibly converts
-   ///   the control property to a value suitable to assign to the model
-   ///   property. Defaults to a function that simply gets the control property
-   ///   value.
+   ///   Optional. Function that gets the target object property and possibly 
+   ///   converts the value to one suitable to assign to the model property. 
+   ///   Defaults to a function that simply gets the control property value.
    /// </param>
    /// <returns>
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
@@ -276,6 +264,7 @@ public static class ControlExtensions
       this MvcBuilder<M> builder,
       String modelProperty) where M : IValidatingMvcModel
    {
+      builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not Control target)
       {
          var message = String.Format(Messages.BoundObjectInvalidType, nameof(Control));
@@ -317,6 +306,7 @@ public static class ControlExtensions
       String modelProperty,
       ToolTip toolTip) where M : IValidatingMvcModel
    {
+      builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not Control target)
       {
          var message = String.Format(Messages.BoundObjectInvalidType, nameof(Control));
@@ -345,7 +335,7 @@ public static class ControlExtensions
    /// </param>
    /// <param name="propertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
+   ///   the model property to a value suitable to assign to the target object
    ///   property. Defaults to a function that simply gets the model property
    ///   value.
    /// </param>
@@ -374,7 +364,7 @@ public static class ControlExtensions
    /// </param>
    /// <param name="propertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
+   ///   the model property to a value suitable to assign to the target object
    ///   property. Defaults to a function that simply gets the model property
    ///   value.
    /// </param>
@@ -382,10 +372,6 @@ public static class ControlExtensions
    ///   A reference to the <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
-   /// <exception cref="InvalidOperationException">
-   ///   The <paramref name="builder"/> CurrentControl type is not
-   ///   <see cref="CheckBox"/>.
-   /// </exception>
    public static MvcBuilder<M> BindToCheckBoxCheckedProperty<M>(
       this MvcBuilder<M> builder,
       String modelProperty,
@@ -428,7 +414,7 @@ public static class ControlExtensions
    /// </param>
    /// <param name="propertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
+   ///   the model property to a value suitable to assign to the target object
    ///   property. Defaults to a function that simply gets the model property
    ///   value.
    /// </param>
@@ -457,7 +443,7 @@ public static class ControlExtensions
    /// </param>
    /// <param name="propertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
+   ///   the model property to a value suitable to assign to the target object
    ///   property. Defaults to a function that simply gets the model property
    ///   value.
    /// </param>
@@ -486,7 +472,7 @@ public static class ControlExtensions
    /// </param>
    /// <param name="propertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
+   ///   the model property to a value suitable to assign to the target object
    ///   property. Defaults to a function that simply gets the model property
    ///   value.
    /// </param>
@@ -515,7 +501,7 @@ public static class ControlExtensions
    /// </param>
    /// <param name="propertyGetter">
    ///   Optional. Function that gets the model property and possibly converts
-   ///   the model property to a value suitable to assign to the control
+   ///   the model property to a value suitable to assign to the target object
    ///   property. Defaults to a function that simply gets the model property
    ///   value.
    /// </param>

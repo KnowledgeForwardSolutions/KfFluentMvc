@@ -1,4 +1,4 @@
-﻿namespace KfFluentMvc.WinForms.Bindings;
+﻿namespace KfFluentMvc.WinForms.Bindings.Specialized;
 
 /// <summary>
 ///   Defines a one-way binding from a model property to a 

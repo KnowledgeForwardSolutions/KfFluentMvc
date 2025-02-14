@@ -36,6 +36,7 @@ public static class TreeViewExtensions
       String modelProperty,
       Func<TreeNode?, P?>? selectedValueGetter = null) where M : IMvcModel
    {
+      builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not TreeView treeView)
       {
          var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
@@ -84,6 +85,7 @@ public static class TreeViewExtensions
       String modelProperty,
       Func<IEnumerable<I>?, IEnumerable<TreeNode>> collectionMapper) where M : IMvcModel
    {
+      builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not TreeView treeView)
       {
          var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));
@@ -128,6 +130,7 @@ public static class TreeViewExtensions
       String modelProperty,
       Func<P, String>? keyGetter = null) where M : IMvcModel
    {
+      builder.ThrowIfTargetNotSet();
       if (builder.CurrentTarget is not TreeView treeView)
       {
          var message = String.Format(Messages.BoundObjectInvalidType, nameof(TreeView));

@@ -4,4 +4,5 @@ global using System.Runtime.CompilerServices;
 global using System.Windows.Forms;
 
 global using KfFluentMvc.WinForms.Bindings;
+global using KfFluentMvc.WinForms.Bindings.Specialized;
 

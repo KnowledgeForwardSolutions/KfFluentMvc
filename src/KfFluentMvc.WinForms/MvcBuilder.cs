@@ -85,9 +85,48 @@ public class MvcBuilder<M>
    ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
    ///   chaining.
    /// </returns>
+   /// <remarks>
+   ///   Use this overload when the bound action does not require the event 
+   ///   parameters.
+   /// </remarks>
    public MvcBuilder<M> BindFromTargetEvent<T, E>(
       String targetEvent,
       Action<M, T> action) where E : EventArgs
+   {
+      ThrowIfTargetNotSet();
+      if (CurrentTarget is not T target)
+      {
+         var message = String.Format(Messages.BoundObjectInvalidType, typeof(T).Name);
+         throw new InvalidOperationException(message);
+      }
+
+      var binding = new TargetEventActionBinding<M, T, E>(Model, target, targetEvent, action);
+      WithBinding(binding);
+
+      return this;
+   }
+
+   /// <summary>
+   ///   Create a binding that performs an action in response to a control 
+   ///   event.
+   /// </summary>
+   /// <param name="targetEvent">
+   ///   The name of the control event to monitor.
+   /// </param>
+   /// <param name="action">
+   ///   The action to perform when the control event fires.
+   /// </param>
+   /// <returns>
+   ///   A reference to this <see cref="MvcBuilder{M}"/> to support method 
+   ///   chaining.
+   /// </returns>
+   /// <remarks>
+   ///   Use this overload when the bound action requires the event parameters.
+   ///   For example, when responding to events that can be canceled.
+   /// </remarks>
+   public MvcBuilder<M> BindFromTargetEvent<T, E>(
+      String targetEvent,
+      Action<M, T, E> action) where E : EventArgs
    {
       ThrowIfTargetNotSet();
       if (CurrentTarget is not T target)
